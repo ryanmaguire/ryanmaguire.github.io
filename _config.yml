@@ -15,13 +15,14 @@ description: A collection of volumes in various areas of mathematics and physics
 author : Ryan Maguire
 email : rmaguire314@gmail.com
 github : ryanmaguire
+name : Ryan Maguire
 
 baseurl: ""
 url: "https://ryanmaguire.github.io/"
 github_username: ryanmaguire
 
 # Build settings
-theme: jekyll-theme-midnight
+theme: jekyll-theme-modernist
 plugins:
   - jekyll-feed
 
