@@ -18,6 +18,7 @@ github : ryanmaguire
 name : Ryan Maguire
 
 baseurl: ""
+repository_url: "https://github.com/ryanmaguire"
 url: "https://ryanmaguire.github.io/"
 github_username: ryanmaguire
 

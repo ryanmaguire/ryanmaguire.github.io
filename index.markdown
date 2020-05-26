@@ -4,3 +4,5 @@
 
 layout: default
 ---
+[**About**](./about)
+[**Asymptote**](./asymptote)
