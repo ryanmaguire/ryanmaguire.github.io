@@ -2,6 +2,8 @@
 layout: default
 permalink: /projects/mandelbrot_set/
 ---
+[**Back**](../)
+
 # [**Source Code**](https://github.com/ryanmaguire/mandelbrot_set/)
 
 # **Table of Contents**
@@ -10,7 +12,7 @@ permalink: /projects/mandelbrot_set/
 
 # Mandelbrot Set <a name="mbs"></a>
 Code for rendering the Mandelbrot set and variants.
-![Mandelbrot Set](https://math.dartmouth.edu/~rmaguire/assets/mandelbrot_set_001.png "Mandelbrot Set")
+![Mandelbrot Set](https://math.dartmouth.edu/~rmaguire/projects/mandelbrot_set/mandelbrot_set_001.png "Mandelbrot Set")
 
 # License
     mandelbrot_set is free software: you can redistribute it and/or modify

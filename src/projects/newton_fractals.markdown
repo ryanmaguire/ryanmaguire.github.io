@@ -4,6 +4,7 @@ permalink: /projects/newton_fractals/
 ---
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 [**Back**](../)
+
 # [**Source Code**](https://github.com/ryanmaguire/newton_fractals/)
 
 ## **Table of Contents**
@@ -23,4 +24,5 @@ and color $$z_{0}$$ based on which point Newton's method converges to. (If it
 didn't converge, color it black. This is the Julia set of the Newton fractal).
 
 The Newton fractal for $$p(z)=z^{3}-1$$ is given below.
-![Newton Fractal](https://math.dartmouth.edu/~rmaguire/assets/newton_fractal_z_cubed_minus_one.png "Newton Fractal")
+
+![Newton Fractal](https://math.dartmouth.edu/~rmaguire/projects/newton_fractals/newton_fractal_z_cubed_minus_one.png "Newton Fractal")

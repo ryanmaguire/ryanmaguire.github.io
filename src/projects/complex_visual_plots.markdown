@@ -4,6 +4,7 @@ permalink: /projects/complex_visual_plots/
 ---
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 [**Back**](../)
+
 # [**Source Code**](https://github.com/ryanmaguire/complex_visual_plots/)
 
 ## **Table of Contents**
@@ -16,7 +17,7 @@ a function $$f:\mathbb{C}\rightarrow\mathbb{C}$$ we can paint the point
 $$z\in\mathbb{C}$$ by giving it a color corresponding to the argument
 $$\textrm{Arg}\big(f(z)\big)$$ and the intensity given by the modulus
 $$|f(z)|$$. For a function like $$f(z)=z^{3}-1$$ we get the following.
-![Z Cubed Minus One](https://math.dartmouth.edu/~rmaguire/assets/z_cubed_minus_one.png "Z Cubed Minus One")
+![Z Cubed Minus One](https://math.dartmouth.edu/~rmaguire/projects/complex_visual_plots/z_cubed_minus_one.png "Z Cubed Minus One")
 
 There are also routines to iteratively compute functions over and over. This
 can help visual how Newton fractals occur. The polynomial $$f(z)=z^{3}-1$$ has
@@ -27,13 +28,13 @@ Newton perturbation given by
 By defining $$p_{0}(z)=p(z)$$ and $$p_{n+1}(z)=p(p_{n}(z))$$ we can see how
 Newton fractals form (which correspond to $$p_{\infty}$$). Three iterations
 yield the following plot.
-![Z Cubed Minus One Three Iters](https://math.dartmouth.edu/~rmaguire/assets/z_cubed_minus_one_three_iters.png "Z Cubed Minus One Three Iters")
+![Z Cubed Minus One Three Iters](https://math.dartmouth.edu/~rmaguire/projects/complex_visual_plots/z_cubed_minus_one_three_iters.png "Z Cubed Minus One Three Iters")
 
 Lastly, the Mandelbrot set can be described by the recursive definition
 $$w_{0}=z$$, $$w_{n+1}=w_{n}^{2}+z$$. Performing a finite number of iterations
 can help us see how the Mandelbrot set starts to form. Six iterations yields
 the following image.
-![Mandelbrot Six Iters](https://math.dartmouth.edu/~rmaguire/assets/mandelbrot_six_iters.png "Mandelbrot Six Iters")
+![Mandelbrot Six Iters](https://math.dartmouth.edu/~rmaguire/projects/complex_visual_plots/mandelbrot_six_iters.png "Mandelbrot Six Iters")
 
 ## **Benchmarks**
 

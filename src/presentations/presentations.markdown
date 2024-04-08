@@ -3,7 +3,7 @@ layout: default
 title: Presentations
 permalink: /presentations/
 ---
-{% capture site %}https://math.dartmouth.edu/~rmaguire/assets/{% endcapture %}
+{% capture site %}https://math.dartmouth.edu/~rmaguire/presentations/{% endcapture %}
 [**Back**](../)<br />
 ### **Presentations**
 [**2023/09/29 Dartmouth GSS: Legendre Polynomials and Saturn**]({{ site }}2023_09_29_legendre_polynomials_and_saturn.pdf)<br />

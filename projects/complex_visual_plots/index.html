@@ -39,6 +39,7 @@
         <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 <p><a href="../"><strong>Back</strong></a></p>
+
 <h1 id="source-code"><a href="https://github.com/ryanmaguire/complex_visual_plots/"><strong>Source Code</strong></a></h1>
 
 <h2 id="table-of-contents"><strong>Table of Contents</strong></h2>
@@ -53,7 +54,7 @@ a function \(f:\mathbb{C}\rightarrow\mathbb{C}\) we can paint the point
 \(z\in\mathbb{C}\) by giving it a color corresponding to the argument
 \(\textrm{Arg}\big(f(z)\big)\) and the intensity given by the modulus
 \(|f(z)|\). For a function like \(f(z)=z^{3}-1\) we get the following.
-<img src="https://math.dartmouth.edu/~rmaguire/assets/z_cubed_minus_one.png" alt="Z Cubed Minus One" title="Z Cubed Minus One" /></p>
+<img src="https://math.dartmouth.edu/~rmaguire/projects/complex_visual_plots/z_cubed_minus_one.png" alt="Z Cubed Minus One" title="Z Cubed Minus One" /></p>
 
 <p>There are also routines to iteratively compute functions over and over. This
 can help visual how Newton fractals occur. The polynomial \(f(z)=z^{3}-1\) has
@@ -64,13 +65,13 @@ Newton perturbation given by
 By defining \(p_{0}(z)=p(z)\) and \(p_{n+1}(z)=p(p_{n}(z))\) we can see how
 Newton fractals form (which correspond to \(p_{\infty}\)). Three iterations
 yield the following plot.
-<img src="https://math.dartmouth.edu/~rmaguire/assets/z_cubed_minus_one_three_iters.png" alt="Z Cubed Minus One Three Iters" title="Z Cubed Minus One Three Iters" /></p>
+<img src="https://math.dartmouth.edu/~rmaguire/projects/complex_visual_plots/z_cubed_minus_one_three_iters.png" alt="Z Cubed Minus One Three Iters" title="Z Cubed Minus One Three Iters" /></p>
 
 <p>Lastly, the Mandelbrot set can be described by the recursive definition
 \(w_{0}=z\), \(w_{n+1}=w_{n}^{2}+z\). Performing a finite number of iterations
 can help us see how the Mandelbrot set starts to form. Six iterations yields
 the following image.
-<img src="https://math.dartmouth.edu/~rmaguire/assets/mandelbrot_six_iters.png" alt="Mandelbrot Six Iters" title="Mandelbrot Six Iters" /></p>
+<img src="https://math.dartmouth.edu/~rmaguire/projects/complex_visual_plots/mandelbrot_six_iters.png" alt="Mandelbrot Six Iters" title="Mandelbrot Six Iters" /></p>
 
 <h2 id="benchmarks"><strong>Benchmarks</strong></h2>
 
