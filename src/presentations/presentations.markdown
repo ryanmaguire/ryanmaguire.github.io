@@ -6,6 +6,9 @@ permalink: /presentations/
 {% capture site %}https://math.dartmouth.edu/~rmaguire/presentations/{% endcapture %}
 [**Back**](../)<br />
 ### **Presentations**
+[**2024/04/01 USF Topology Seminar: Relative Strengths of Knot Invariants by Experiment**]({{ site }}2024_04_01_relative_strengths_of_knot_invariants_by_experiment.pdf)<br/>
+[**2024/03/05 Thesis Defense: Khovanov Homology and Legendrian Simple Knots**]({{ site }}2024_03_05_khovanov_homology_and_legendrian_simple_knots.pdf)<br />
+[**2023/12/10 Knots in Washington: Linking Numbers and Causality in Spacetimes**]({{ site }}2023_12_10_linking_numbers_and_causality_in_spacetimes.pdf)<br />
 [**2023/09/29 Dartmouth GSS: Legendre Polynomials and Saturn**]({{ site }}2023_09_29_legendre_polynomials_and_saturn.pdf)<br />
 [**2023/05/24 Dartmouth Informal Geometry Seminar: Morse Theory and Borde-Sorkin Spacetimes**]({{ site }}2023_05_24_morse_theory_and_borde_sorkin_spacetimes.pdf)<br />
 [**2023/05/05 Dartmouth Informal Geometry Seminar: Causality and Topological Linking ...**]({{ site }}2023_05_05_causality_and_topological_linking_in_two_plus_one_dimensional_spacetimes.pdf)<br />
