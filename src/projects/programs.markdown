@@ -5,8 +5,8 @@ permalink: /projects/
 ---
 [**Back**](../)
 
-# **Major Projects**
-## [**libtmpl**](https://github.com/ryanmaguire/libtmpl)
+## **Major Projects**
+### [**libtmpl**](https://github.com/ryanmaguire/libtmpl)
 `libtmpl`, *the mathematicians programming library*, is, among other things, a
 full implementation of `libm`, the C standard library for mathematical
 functions, and complex routines. These are the functions provided in
@@ -16,15 +16,15 @@ compilers. In addition to this it contains a plethora of
 routines mathematicians and physicists may enjoy. This includes Fourier analysis
 and FFTs, vector geometry, fresnel optics, knot theory, and more. It is
 still a work in progress, but already contains over 160,000 lines of code.
-## [**Mathematics-and-Physics**](https://github.com/ryanmaguire/Mathematics-and-Physics)
+### [**Mathematics-and-Physics**](https://github.com/ryanmaguire/Mathematics-and-Physics)
 `Mathematics-and-Physics` contains all of my notes on mathematics and physics,
 written in `LaTeX`. It also contains the code for several hundred figures,
 written mostly in `asymptote`, but also in `tikz` and a few in `POV-Ray`.
-## [**rss_ringoccs**](https://github.com/NASA-Planetary-Science/rss_ringoccs)
+### [**rss_ringoccs**](https://github.com/NASA-Planetary-Science/rss_ringoccs)
 A suite of code for processing the radio science data from the Cassini mission.
 Written in collaboration with Richard French, Jolene Fong, Glenn Steranka, and
 Sophia Flury at Wellesley college.
-# **Minor Projects**
+## **Minor Projects**
 [**Barnsley Fern**](./barnsley_fern):
 Renders the Barnsley fern fractal.<br />
 [**Complex Visual Plots**](./complex_visual_plots):
