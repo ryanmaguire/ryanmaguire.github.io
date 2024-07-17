@@ -25,19 +25,19 @@ A suite of code for processing the radio science data from the Cassini mission.
 Written in collaboration with Richard French, Jolene Fong, Glenn Steranka, and
 Sophia Flury at Wellesley college.
 ## **Minor Projects**
-[**Barnsley Fern**](./barnsley_fern):
+[**Barnsley Fern**](https://github.com/ryanmaguire/barnsley_fern):
 Renders the Barnsley fern fractal.<br />
-[**Complex Visual Plots**](./complex_visual_plots):
+[**Complex Visual Plots**](https://github.com/ryanmaguire/complex_visual_plots):
 Creates plots of complex-valued functions.<br />
-[**Mandelbrot Set**](./mandelbrot_set):
+[**Mandelbrot Set**](https://github.com/ryanmaguire/mandelbrot_set):
 Creates the Mandelbrot set and variants.<br />
-[**Metric Space Disks**](./metric_space_disks):
+[**Metric Space Disks**](https://github.com/ryanmaguire/metric_space_disks):
 Draws the unit disk of various metrics in the plane.<br />
-[**Newton Fractals**](./newton_fractals):
+[**Newton Fractals**](https://github.com/ryanmaguire/newton_fractals):
 Generates Newton fractals in the plane and on the sphere.<br />
-[**Newtonian Black Holes**](./newtonian_black_holes)
+[**Newtonian Black Holes**](https://github.com/ryanmaguire/newtonian_black_holes)
 Raytraces light with gravity using Newtonian mechanics.<br />
-[**Perfectly Normal Spaces**](./perfectly_normal_spaces):
+[**Perfectly Normal Spaces**](https://github.com/ryanmaguire/perfectly_normal_spaces):
 Depicts the separating functions for perfectly normal spaces.<br />
-[**Random Walks**](./random_walks):
+[**Random Walks**](https://github.com/ryanmaguire/random_walks):
 Draws random walks on two dimensional manifolds.
