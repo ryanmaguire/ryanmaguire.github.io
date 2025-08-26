@@ -13,3 +13,6 @@ rm -rf site/assets
 rm -rf site/threejs
 mv site/* .
 rm -rf site
+
+cd "$CURRENT_PATH"
+rm -rf programming

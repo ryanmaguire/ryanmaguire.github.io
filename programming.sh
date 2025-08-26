@@ -2,6 +2,8 @@ dir="programming"
 mainFile="$dir/$dir.markdown"
 source="../../3rdparty/mitx_mathematics_programming_examples"
 
+rm -rf "$programming"
+
 mkdir -p "$dir"
 touch "$mainFile"
 
