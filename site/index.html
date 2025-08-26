@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Ryan Maguire | Mathematics, Physics, and Programming</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Ryan Maguire" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Mathematics, Physics, and Programming" />
+<meta property="og:description" content="Mathematics, Physics, and Programming" />
+<link rel="canonical" href="https://github.com/ryanmaguire/" />
+<meta property="og:url" content="https://github.com/ryanmaguire/" />
+<meta property="og:site_name" content="Ryan Maguire" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Ryan Maguire" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"Mathematics, Physics, and Programming","headline":"Ryan Maguire","name":"Ryan Maguire","url":"https://github.com/ryanmaguire/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://github.com/ryanmaguire/feed.xml" title="Ryan Maguire" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Ryan Maguire</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/papers/">Papers</a><a class="page-link" href="/presentations/">Presentations</a><a class="page-link" href="/projects/">Projects</a><a class="page-link" href="/threejs/">Three.js</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <p>Hello! My name is Ryan Maguire, I am a Ph.D. student at Dartmouth college
+studying mathematics. My current interests are topology, geometry,
+and set theory. My topological interests include knot theory, manifolds,
+and continua theory (the study of compact connected metric spaces).
+In particular I’ve recently developed a fascination with problems in planar
+topology and the pathologies therein
+(the <a href="https://en.wikipedia.org/wiki/Pseudo-arc">pseudo-arc</a> and
+<a href="https://en.wikipedia.org/wiki/Lakes_of_Wada">lakes of Wada</a> are exotic
+examples). In geometry I study Lorentzian manifolds and their
+applications to general relativity. Apart from that I have a personal interest
+in ZFC set theory and attempting to rigorously build mathematics from these
+foundations.
+<br /><br />
+In the past I studied mathematics and physics at the University of
+Massachusetts, Lowell, obtaining a B.S. in mathematics and physics and an M.S.
+in mathematics. I primarily studied analysis, Euclidean geometry, and
+convex geometry. While there I spent five years working at the center
+for atmospheric research (CAR), later renamed the Lowell center for science and
+space technology (LoCSST). Here I worked on DWEL, a botanical experiment
+involving LIDAR, and HiT&amp;MIS, a spectrograph which was deployed in Kiruna,
+Sweden to study the aurora. I also participated in the analysis of data from the
+SPINR sounding rocket mission and performed daily laboratory tasks such as
+changing out oxygen tanks. My main contribution being HiT&amp;MIS,
+and both of the instruments we built are quite special to me.
+<br /><br />
+After Lowell I worked at the Whitin observatory at Wellesley College for two
+years with NASA’s radio science team for the Cassini mission. I studied more
+analysis, including Fourier analysis, numerical methods, mathematical physics,
+and iterative methods of solving Fredholm integral equations. These efforts
+culminated in <code class="language-plaintext highlighter-rouge">rss_ringoccs</code> which is a free and open source suite of code
+written in C and Python for processing the occultation data obtained from
+Cassini. Here I learned a lot about computer science and the C programming
+language and also began to obsess over visualizing mathematics.
+<br /><br />
+After departing from Wellesley I entered into a Ph.D. program at Dartmouth, and
+that’s where I am now. My current goals involve programming projects I’ve
+been working on. There are two main ones.
+<br /><br />
+<a href="https://github.com/ryanmaguire/libtmpl">libtmpl</a> is an open source
+library of code for mathematicians and physicists in a variety of situations.
+It features a (nearly complete) cross-platform implementation of the current
+standard of <code class="language-plaintext highlighter-rouge">libm</code>, the C standard library for mathematical functions, with
+functions available for 32-bit float, 64-bit double, 80-bit extended precision,
+128-bit quadruple, and 128-bit double-double
+(as mentioned it has cross-platform support). It is very portable, compiling
+with GCC, LLVM’s Clang, TCC, PCC, and Microsoft’s MSVC, supporting all major
+operating systems (GNU/Linux, FreeBSD, macOS, Microsoft Windows, Haiku OS, etc.)
+and architectures (x86, x64, arm64, mips, powerpc, and more). This project
+started with <code class="language-plaintext highlighter-rouge">rss_ringoccs</code> but grew far beyond the scope of astonomy. It
+contains a cross-platform implementation of complex numbers, 2D and 3D geometry,
+Fourier transforms, and much more. You’ll find the performance of the algorithms
+rival other libraries. All functions have tests, when possible, against other
+implementations (like Boost, glibc, openlibm, etc.).
+<br /><br />
+<a href="https://github.com/ryanmaguire/Mathematics-and-Physics">Mathematics-and-Physics</a>
+is another library I’ve been working on since around 2017.
+It is a repository of notes on
+many areas of mathematics and physics that are ordered in an attempt at being
+consistent. The aim is to mimic the styling of Euclid’s elements which is
+<em>theorem, definition, proof</em>, but also add a lot of discussion and images so
+that one may easily learn from it. This project is very much still in it’s
+infancy, but already has 1000+ pages and several hundred figures. The codes for
+these figures are written in C, asymptote, and tikz
+(though I intend to start phasing out the tikz code for the more powerful
+asymptote methods). This repository also contains my class notes, presentations,
+and <em>mini-projects</em> that are usually devoted to raytracing, rendering fractals,
+and visualizing mathematics. All of it is freely available under the GPLv3.
+<br /><br />
+Here’s me at the top of Mount Mansfield in Vermont.
+<img src="https://ryanmaguire.github.io/assets/ryan.jpg" alt="Me" title="Me" /></p>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Ryan Maguire</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ryan Maguire</li><li><a class="u-email" href="mailto:rmaguire@protonmail.com">rmaguire@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/ryanmaguire"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">ryanmaguire</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Mathematics, Physics, and Programming</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
