@@ -1,7 +1,7 @@
 rm -rf asymptote
 mkdir -p asymptote
 
-projdir=$HOME/Documents/Code
+projdir=../../
 parent=$projdir/Mathematics-and-Physics/
 sitename=https://ryanmaguire.github.io
 sitehome=$projdir/ryanmaguire.github.io/
@@ -40,7 +40,7 @@ for directory in ${parent}asymptote/*; do
         echo "" >> $localdirmarkdown
         echo "[**Back**](../)" >> $localdirmarkdown
         echo "" >> $localdirmarkdown
-        
+
         echo -e "[**$localdirbasename**](./$localdirbasename)\n" >> $webpage
 
         # Loop through the subdirectories and create the figures.
@@ -87,7 +87,7 @@ for directory in ${parent}asymptote/*; do
                     else
                         mv $filenamenoext.gif ./assets/
                         echo -e "[$filenamenoext]($sitename/assets/$filenamenoext.gif)\n" >> $localsubdirmarkdown
-                    fi  
+                    fi
                 done
             fi
         done

@@ -1,4 +1,5 @@
 CURRENT_PATH="$(pwd)"
+
 . ./clean.sh
 . ./threejs.sh
 

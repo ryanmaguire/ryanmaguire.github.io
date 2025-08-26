@@ -15,7 +15,7 @@ dirs="$(                    \
 )"
 
 for dir in $dirs; do
-    rm -rf "$dir"
+    echo "$dir"
 done
 
 rm -f index.html

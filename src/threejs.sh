@@ -1,11 +1,13 @@
 CURRENT_PATH="$(pwd)"
-SOURCE_PATH="../../3rdparty/threejs_figures/"
+SOURCE_PATH="../3rdparty/threejs_figures/"
 mkdir -p ../threejs/
-cd ../site/threejs/
+cd ../threejs/
 
 find . -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} \;
 
 files=$(find "$SOURCE_PATH" \( -name "*.html" -o -name "*.js" \))
+
+echo $files
 
 for file in $files; do
 
