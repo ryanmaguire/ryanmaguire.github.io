@@ -1,9 +1,18 @@
 CURRENT_PATH="$(pwd)"
 
 rm -rf .jekyll-cache
-cd ../site/
+cd ../
 
-dirs="$(find . -mindepth 1 -maxdepth 1 -type d -not -name 'assets')"
+dirs="$(                    \
+    find .                  \
+    -mindepth 1             \
+    -maxdepth 1             \
+    -type d                 \
+    -not -name 'assets'     \
+    -not -name '3rdparty'   \
+    -not -name 'src'        \
+    -not -name '.git'       \
+)"
 
 for dir in $dirs; do
     rm -rf "$dir"
