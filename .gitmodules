@@ -1,0 +1,6 @@
+[submodule "3rdparty/threejs_figures"]
+	path = 3rdparty/threejs_figures
+	url = https://github.com/ryanmaguire/threejs_figures.git
+[submodule "3rdparty/mitx_mathematics_programming_examples"]
+	path = 3rdparty/mitx_mathematics_programming_examples
+	url = https://github.com/ryanmaguire/mitx_mathematics_programming_examples.git
