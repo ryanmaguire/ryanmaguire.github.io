@@ -24,6 +24,7 @@ description: Mathematics, Physics, and Programming
 baseurl: "/"
 url: "https://github.com/ryanmaguire"
 github_username: ryanmaguire
+destination: ../site
 
 # Build settings
 theme: minima
@@ -32,6 +33,13 @@ plugins:
 
 keep_files:
   - threejs/
+  - assets/
+
+exclude:
+  - asymptote.sh
+  - build.sh
+  - clean.sh
+  - threejs.sh
 
 # Exclude from processing.
 # The following items will not be processed, by default.

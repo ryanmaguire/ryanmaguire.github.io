@@ -1,7 +1,7 @@
 CURRENT_PATH="$(pwd)"
-SOURCE_PATH="../../../3rdparty/threejs_figures/"
-mkdir -p _site/threejs/
-cd _site/threejs/
+SOURCE_PATH="../../3rdparty/threejs_figures/"
+mkdir -p ../threejs/
+cd ../site/threejs/
 
 find . -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} \;
 
