@@ -1,0 +1,96 @@
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#                                   LICENSE                                    #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#   This file is part of mitx_mathematics_programming_examples.                #</span>
+<span class="sd">#                                                                              #</span>
+<span class="sd">#   mitx_mathematics_programming_examples is free software: you can            #</span>
+<span class="sd">#   redistribute it and/or modify it under the terms of the GNU General Public #</span>
+<span class="sd">#   License as published by the Free Software Foundation, either version 3 of  #</span>
+<span class="sd">#   the License, or (at your option) any later version.                        #</span>
+<span class="sd">#                                                                              #</span>
+<span class="sd">#   mitx_mathematics_programming_examples is distributed in the hope that it   #</span>
+<span class="sd">#   will be useful, but WITHOUT ANY WARRANTY; without even the implied         #</span>
+<span class="sd">#   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  #</span>
+<span class="sd">#   GNU General Public License for more details.                               #</span>
+<span class="sd">#                                                                              #</span>
+<span class="sd">#   You should have received a copy of the GNU General Public License          #</span>
+<span class="sd">#   along with mitx_mathematics_programming_examples.  If not, see             #</span>
+<span class="sd">#   &lt;https://www.gnu.org/licenses/&gt;.                                           #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#   Purpose:                                                                   #</span>
+<span class="sd">#       Calculates roots of a function using Steffensen&#39;s method.              #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#   Author:     Ryan Maguire                                                   #</span>
+<span class="sd">#   Date:       May 25, 2025.                                                  #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Pylint doesn&#39;t like &quot;x&quot; as a variable name. Disable this warning.</span>
+<span class="c1"># pylint: disable = invalid-name</span>
+
+<span class="c1"># Computes the root of a function via Steffensen&#39;s method.</span>
+<span class="k">def</span> <span class="nf">steffensen</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function:</span>
+<span class="sd">            steffensen</span>
+<span class="sd">        Purpose:</span>
+<span class="sd">            Computes the root of a function f: R -&gt; R.</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            f (function):</span>
+<span class="sd">                A function f: R -&gt; R. The root of f is computed.</span>
+<span class="sd">            x (float):</span>
+<span class="sd">                The guess point for the root of f.</span>
+<span class="sd">        Output:</span>
+<span class="sd">            root (float):</span>
+<span class="sd">                A root of the function f near x.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Steffensen&#39;s method is iterative. The convergence is quadratic, meaning</span>
+    <span class="c1"># the number of accurate decimals doubles with each iteration. Because of</span>
+    <span class="c1"># this we can halt the algorithm after a few steps.</span>
+    <span class="n">maximum_number_of_iterations</span> <span class="o">=</span> <span class="mi">16</span>
+
+    <span class="c1"># Maximum allowed error. This is 4x double precision epsilon.</span>
+    <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">8.881784197001252E-16</span>
+
+    <span class="c1"># Steffensen&#39;s method starts the process at the guess point.</span>
+    <span class="n">xn</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="c1"># Iteratively perform Steffensen&#39;s method.</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maximum_number_of_iterations</span><span class="p">):</span>
+
+        <span class="c1"># Steffensen&#39;s method needs the evaluations f(x) and f(x + f(x)),</span>
+        <span class="c1"># in particular the denominator is f(x + f(x)) / f(x) - 1.</span>
+        <span class="n">f_xn</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xn</span><span class="p">)</span>
+        <span class="n">g_xn</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xn</span> <span class="o">+</span> <span class="n">f_xn</span><span class="p">)</span> <span class="o">/</span> <span class="n">f_xn</span> <span class="o">-</span> <span class="mf">1.0</span>
+
+        <span class="c1"># Like Newton&#39;s method the new point is obtained by subtracting</span>
+        <span class="c1"># the ratio. g(x) = f(x + f(x))/f(x) - 1 acts as the derivative</span>
+        <span class="c1"># of f, but we do not explicitly need to calculate f&#39;(x).</span>
+        <span class="n">xn</span> <span class="o">=</span> <span class="n">xn</span> <span class="o">-</span> <span class="n">f_xn</span> <span class="o">/</span> <span class="n">g_xn</span>
+
+        <span class="c1"># If f(x) is very small, we are close to a root and can break</span>
+        <span class="c1"># out of this for loop. Check for this.</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f_xn</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="c1"># Like Newton&#39;s method, and like Heron&#39;s method, the convergence is</span>
+    <span class="c1"># quadratic. After a few iterations we will be very to close a root.</span>
+    <span class="k">return</span> <span class="n">xn</span>
+
+<span class="c1"># Input function for Steffensen&#39;s method.</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes f(x) = 2 - x^2. sqrt(2) is a root of this, we can compute</span>
+<span class="sd">        this value by applying Steffensen&#39;s method to this function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+
+<span class="c1"># 2 is close enough to sqrt(2) for Steffensen&#39;s method to work.</span>
+<span class="n">X</span> <span class="o">=</span> <span class="mf">2.0</span>
+
+<span class="c1"># Compute sqrt(2) using Steffensen&#39;s method and print the result.</span>
+<span class="n">sqrt_2</span> <span class="o">=</span> <span class="n">steffensen</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sqrt(2) = </span><span class="si">{</span><span class="n">sqrt_2</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>

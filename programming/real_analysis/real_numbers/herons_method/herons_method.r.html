@@ -1,0 +1,78 @@
+<div class="highlight"><pre><span></span><span class="c">################################################################################</span>
+<span class="c">#                                   LICENSE                                    #</span>
+<span class="c">################################################################################</span>
+<span class="c">#   This file is part of mitx_mathematics_programming_examples.                #</span>
+<span class="c">#                                                                              #</span>
+<span class="c">#   mitx_mathematics_programming_examples is free software: you can            #</span>
+<span class="c">#   redistribute it and/or modify it under the terms of the GNU General        #</span>
+<span class="c">#   Public License as published by the Free Software Foundation, either        #</span>
+<span class="c">#   version 3 of the License, or (at your option) any later version.           #</span>
+<span class="c">#                                                                              #</span>
+<span class="c">#   mitx_mathematics_programming_examples is distributed in the hope that      #</span>
+<span class="c">#   it will be useful but WITHOUT ANY WARRANTY; without even the implied       #</span>
+<span class="c">#   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           #</span>
+<span class="c">#   See the GNU General Public License for more details.                       #</span>
+<span class="c">#                                                                              #</span>
+<span class="c">#   You should have received a copy of the GNU General Public License          #</span>
+<span class="c">#   along with mitx_mathematics_programming_examples. If not, see              #</span>
+<span class="c">#   &lt;https://www.gnu.org/licenses/&gt;.                                           #</span>
+<span class="c">################################################################################</span>
+<span class="c">#   Purpose:                                                                   #</span>
+<span class="c">#       Calculates square roots using Heron&#39;s method.                          #</span>
+<span class="c">################################################################################</span>
+<span class="c">#   Author: Ryan Maguire                                                       #</span>
+<span class="c">#   Date:   2025/05/18                                                         #</span>
+<span class="c">################################################################################</span>
+
+<span class="c"># Computes the square root of a positive real number via Heron&#39;s method.</span>
+<span class="c">herons_method &lt;- function(x) {</span>
+
+<span class="c">    # Heron&#39;s method is iterative and the convergence is quadratic. This</span>
+<span class="c">    # means that if a_{n} has N correct decimals, then a_{n+1} will have</span>
+<span class="c">    # 2N correct decimals. A standard 64-bit double can fit about 16</span>
+<span class="c">    # decimals of precision (the exact value is 2^-52 ~= 2.22x10^-16).</span>
+<span class="c">    # Because of this we may exit the function after a few iterations.</span>
+<span class="c">    maximum_number_of_iterations &lt;- 16</span>
+
+<span class="c">    # The maximum allowed error. This is double precision epsilon.</span>
+<span class="c">    epsilon &lt;- 2.220446049250313E-16</span>
+
+<span class="c">    # Set the initial guess to the input. Provided x is positive, Heron&#39;s</span>
+<span class="c">    # method will indeed converge.</span>
+<span class="c">    approximate_root &lt;- x</span>
+
+<span class="c">    # Iteratively loop through and obtain better approximations for sqrt(x).</span>
+<span class="c">    for (iters in 1:maximum_number_of_iterations) {</span>
+
+<span class="c">        # If we are within epsilon of the correct value we may break out of</span>
+<span class="c">        # this for-loop. Use the absolute value function to check.</span>
+<span class="c">        error &lt;- (x - approximate_root * approximate_root) / x</span>
+
+<span class="c">        if (abs(error) &lt; epsilon) {</span>
+<span class="c">            break</span>
+<span class="c">        }</span>
+
+<span class="c">        # Apply Heron&#39;s method to get a better approximation for the root.</span>
+<span class="c">        approximate_root &lt;- 0.5 * (approximate_root + x / approximate_root)</span>
+<span class="c">    }</span>
+
+<span class="c">    # As long as x is positive and not very large, we should have a very</span>
+<span class="c">    # good approximation for sqrt(x). Heron&#39;s method will still work for</span>
+<span class="c">    # very large x, but we must increase maximum_number_of_iterations.</span>
+<span class="c">    return(approximate_root)</span>
+<span class="c">}</span>
+
+<span class="c"># Test out the function, try computing sqrt(2).</span>
+<span class="c">x_val &lt;- 2.0</span>
+<span class="c">sqrt_2 &lt;- herons_method(x_val)</span>
+<span class="c">output &lt;- sprintf(&quot;sqrt(%.1f) = %.16f&quot;, x_val, sqrt_2)</span>
+<span class="c">message(output)</span>
+
+<span class="c"># We can run this by installing R.</span>
+<span class="c">#   https://www.r-project.org/</span>
+<span class="c"># Once installed, type:</span>
+<span class="c">#   Rscript herons_method.r</span>
+<span class="c"># This will output:</span>
+<span class="c">#   sqrt(2.0) = 1.4142135623730949</span>
+<span class="c"># This has relative error 1.570092458683775E-16.</span>
+</pre></div>

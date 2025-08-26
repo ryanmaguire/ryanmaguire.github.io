@@ -1,0 +1,54 @@
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#                                   LICENSE                                    #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#   This file is part of mitx_mathematics_programming_examples.                #</span>
+<span class="sd">#                                                                              #</span>
+<span class="sd">#   mitx_mathematics_programming_examples is free software: you can            #</span>
+<span class="sd">#   redistribute it and/or modify it under the terms of the GNU General        #</span>
+<span class="sd">#   Public License as published by the Free Software Foundation, either        #</span>
+<span class="sd">#   version 3 of the License, or (at your option) any later version.           #</span>
+<span class="sd">#                                                                              #</span>
+<span class="sd">#   mitx_mathematics_programming_examples is distributed in the hope that      #</span>
+<span class="sd">#   it will be useful but WITHOUT ANY WARRANTY; without even the implied       #</span>
+<span class="sd">#   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           #</span>
+<span class="sd">#   See the GNU General Public License for more details.                       #</span>
+<span class="sd">#                                                                              #</span>
+<span class="sd">#   You should have received a copy of the GNU General Public License          #</span>
+<span class="sd">#   along with mitx_mathematics_programming_examples. If not, see              #</span>
+<span class="sd">#   &lt;https://www.gnu.org/licenses/&gt;.                                           #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#   Purpose:                                                                   #</span>
+<span class="sd">#       Provides basic syntax for complex numbers in Python.                   #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#   Author: Ryan Maguire                                                       #</span>
+<span class="sd">#   Date:   2024/11/04                                                         #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Pylint doesn&#39;t like &quot;x&quot;, &quot;y&quot;, or &quot;z&quot; as variable names.</span>
+<span class="c1"># Disable this warning.</span>
+<span class="c1"># pylint: disable = invalid-name</span>
+
+<span class="c1"># Functions for complex numbers provided here.</span>
+<span class="kn">import</span> <span class="nn">cmath</span>
+
+<span class="c1"># Create a complex number. Python uses j instead of i. Probably</span>
+<span class="c1"># because i is often used for indexing arrays and running for-loops.</span>
+<span class="n">z</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">1.0</span><span class="n">j</span>
+
+<span class="c1"># We can compute the real and imaginary parts with ease.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">real</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">imag</span>
+
+<span class="c1"># And we can get the polar form too. Calling the principal argument the &quot;phase&quot;</span>
+<span class="c1"># is a terminology most often found in electrical engineering, astronomy,</span>
+<span class="c1"># and signal processing.</span>
+<span class="n">r</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">cmath</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+<span class="c1"># Python uses &quot;f-strings&quot; to print things to the screen.</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;z = </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2"> i&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;|z| = </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Arg(z) = </span><span class="si">{</span><span class="n">theta</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>

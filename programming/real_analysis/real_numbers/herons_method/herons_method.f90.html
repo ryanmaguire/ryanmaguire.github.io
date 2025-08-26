@@ -1,0 +1,132 @@
+<div class="highlight"><pre><span></span><span class="c">!------------------------------------------------------------------------------!</span>
+<span class="c">!                                   LICENSE                                    !</span>
+<span class="c">!------------------------------------------------------------------------------!</span>
+<span class="c">!   This file is part of mitx_mathematics_programming_examples.                !</span>
+<span class="c">!                                                                              !</span>
+<span class="c">!   mitx_mathematics_programming_examples is free software: you can            !</span>
+<span class="c">!   redistribute it and/or modify it under the terms of the GNU General Public !</span>
+<span class="c">!   License as published by the Free Software Foundation, either version 3 of  !</span>
+<span class="c">!   the License, or (at your option) any later version.                        !</span>
+<span class="c">!                                                                              !</span>
+<span class="c">!   mitx_mathematics_programming_examples is distributed in the hope that it   !</span>
+<span class="c">!   will be useful but WITHOUT ANY WARRANTY; without even the implied warranty !</span>
+<span class="c">!   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           !</span>
+<span class="c">!   GNU General Public License for more details.                               !</span>
+<span class="c">!                                                                              !</span>
+<span class="c">!   You should have received a copy of the GNU General Public License          !</span>
+<span class="c">!   along with mitx_mathematics_programming_examples.  If not, see             !</span>
+<span class="c">!   &lt;https://www.gnu.org/licenses/&gt;.                                           !</span>
+<span class="c">!------------------------------------------------------------------------------!</span>
+<span class="c">!   Purpose:                                                                   !</span>
+<span class="c">!       Calculates square roots using Heron&#39;s method.                          !</span>
+<span class="c">!------------------------------------------------------------------------------!</span>
+<span class="c">!   Author: Ryan Maguire                                                       !</span>
+<span class="c">!   Date:   2025/03/08                                                         !</span>
+<span class="c">!------------------------------------------------------------------------------!</span>
+<span class="k">MODULE </span><span class="n">HERON</span>
+
+<span class="w">    </span><span class="k">IMPLICIT NONE</span>
+
+<span class="w">    </span><span class="c">! Heron&#39;s method is iterative. The convergence is quadratic, meaning the</span>
+<span class="w">    </span><span class="c">! number of accurate decimals doubles with each iteration. Because of this</span>
+<span class="w">    </span><span class="c">! we can halt the algorithm after a few steps.</span>
+<span class="w">    </span><span class="kt">INTEGER</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">MAXIMUM_NUMBER_OF_ITERATIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16</span>
+
+<span class="w">    </span><span class="c">! Maximum allowed error. This is 4x double precision epsilon.</span>
+<span class="w">    </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="nb">EPSILON</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">8.881784197001252E-16</span>
+
+<span class="w">    </span><span class="k">CONTAINS</span>
+
+<span class="w">    </span><span class="c">!--------------------------------------------------------------------------!</span>
+<span class="w">    </span><span class="c">!   Function:                                                              !</span>
+<span class="w">    </span><span class="c">!       HERONS_METHOD                                                      !</span>
+<span class="w">    </span><span class="c">!   Purpose:                                                               !</span>
+<span class="w">    </span><span class="c">!       Computes square roots using Heron&#39;s method.                        !</span>
+<span class="w">    </span><span class="c">!   Arguments:                                                             !</span>
+<span class="w">    </span><span class="c">!       X (REAL):                                                          !</span>
+<span class="w">    </span><span class="c">!           A positive real number.                                        !</span>
+<span class="w">    </span><span class="c">!   OUTPUT:                                                                !</span>
+<span class="w">    </span><span class="c">!       SQRT_X (REAL):                                                     !</span>
+<span class="w">    </span><span class="c">!           The square root of X.                                          !</span>
+<span class="w">    </span><span class="c">!--------------------------------------------------------------------------!</span>
+<span class="w">    </span><span class="k">FUNCTION </span><span class="n">HERONS_METHOD</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">IMPLICIT NONE</span>
+
+<span class="w">        </span><span class="c">! The input is a positive real number.</span>
+<span class="w">        </span><span class="kt">REAL</span><span class="p">,</span><span class="w"> </span><span class="k">INTENT</span><span class="p">(</span><span class="n">IN</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">X</span>
+
+<span class="w">        </span><span class="c">! The output is also a positive real number, the square root of X.</span>
+<span class="w">        </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">HERONS_METHOD</span>
+
+<span class="w">        </span><span class="c">! Dummy variable for keeping track of how many iterations we&#39;ve done.</span>
+<span class="w">        </span><span class="kt">INTEGER</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ITERS</span>
+
+<span class="w">        </span><span class="c">! Variable used for Heron&#39;s approximation. We will iteratively update</span>
+<span class="w">        </span><span class="c">! this value with better approximations using Heron&#39;s method.</span>
+<span class="w">        </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">APPROXIMATE_ROOT</span>
+
+<span class="w">        </span><span class="c">! Variable for tracking the relative error. When this is very small</span>
+<span class="w">        </span><span class="c">! (less than epsilon) we will break out of the loop and return.</span>
+<span class="w">        </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ERROR</span>
+
+<span class="w">        </span><span class="c">! Heron&#39;s method needs a starting value. Initialize this to the input.</span>
+<span class="w">        </span><span class="n">APPROXIMATE_ROOT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span>
+
+<span class="w">        </span><span class="c">! Iteratively perform Heron&#39;s method.</span>
+<span class="w">        </span><span class="k">DO </span><span class="n">ITERS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">MAXIMUM_NUMBER_OF_ITERATIONS</span>
+
+<span class="w">            </span><span class="c">! If the error is small we can break out of this loop.</span>
+<span class="w">            </span><span class="n">ERROR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">X</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">APPROXIMATE_ROOT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">APPROXIMATE_ROOT</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">X</span>
+
+<span class="w">            </span><span class="k">IF</span><span class="w"> </span><span class="p">(</span><span class="nb">ABS</span><span class="p">(</span><span class="n">ERROR</span><span class="p">)</span><span class="w"> </span><span class="p">.</span><span class="n">LT</span><span class="p">.</span><span class="w"> </span><span class="nb">EPSILON</span><span class="p">)</span><span class="w"> </span><span class="k">THEN</span>
+<span class="k">                EXIT</span>
+<span class="k">            END IF</span>
+
+<span class="w">            </span><span class="c">! Otherwise, improve our approximation using Heron&#39;s method.</span>
+<span class="w">            </span><span class="n">APPROXIMATE_ROOT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">APPROXIMATE_ROOT</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">APPROXIMATE_ROOT</span><span class="p">)</span>
+<span class="w">        </span><span class="k">END DO</span>
+
+<span class="w">        </span><span class="c">! If x is positive and not too big, APPROXIMATE_ROOT should have a</span>
+<span class="w">        </span><span class="c">! very accurate approximation to sqrt(x). Heron&#39;s method works for</span>
+<span class="w">        </span><span class="c">! large inputs as well, but we need to increase the value of</span>
+<span class="w">        </span><span class="c">! MAXIMUM_NUMBER_OF_ITERATIONS.</span>
+<span class="w">        </span><span class="n">HERONS_METHOD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">APPROXIMATE_ROOT</span>
+<span class="w">    </span><span class="k">END FUNCTION </span><span class="n">HERONS_METHOD</span>
+<span class="k">END MODULE </span><span class="n">HERON</span>
+
+<span class="c">! Program for testing our implementation of Heron&#39;s method.</span>
+<span class="k">PROGRAM </span><span class="n">MAIN</span>
+
+<span class="w">    </span><span class="k">USE </span><span class="n">HERON</span>
+<span class="w">    </span><span class="k">IMPLICIT NONE</span>
+
+<span class="w">    </span><span class="c">! The input for the method. We&#39;ll compute sqrt(2).</span>
+<span class="w">    </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span>
+
+<span class="w">    </span><span class="c">! Variable for the output.</span>
+<span class="w">    </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">SQRT_X</span>
+
+<span class="w">    </span><span class="c">! Run the routine, computing sqrt(x), and print the result.</span>
+<span class="w">    </span><span class="n">SQRT_X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HERONS_METHOD</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="w">    </span><span class="k">PRINT</span><span class="w"> </span><span class="s2">&quot;(A,F3.1,A,F18.16)&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SQRT(&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;) = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">SQRT_X</span>
+
+<span class="k">END PROGRAM </span><span class="n">MAIN</span>
+
+<span class="c">! You can compile this on GNU, Linux, FreeBSD, macOS, etc., using</span>
+<span class="c">! GNU&#39;s Fortran compiler, gfortran. Type:</span>
+<span class="c">!   gfortran -fdefault-real-8 herons_method.f90 -o main</span>
+<span class="c">!   ./main</span>
+<span class="c">! This will output:</span>
+<span class="c">!   SQRT(2.0) = 1.4142135623730949</span>
+<span class="c">! This has a relative error of 1.570092458683775E-16.</span>
+<span class="c">!</span>
+<span class="c">! On Windows you can also use gfortran by installing MSYS2:</span>
+<span class="c">!   https://www.msys2.org/</span>
+<span class="c">! Along with mingw-w64:</span>
+<span class="c">!   https://www.mingw-w64.org/getting-started/msys2/</span>
+<span class="c">! Once gfortan is installed, you can type:</span>
+<span class="c">!   gfortran -fdefault-real-8 herons_method.f90 -o main.exe</span>
+<span class="c">!   main.exe</span>
+<span class="c">! This will produce the same output.</span>
+</pre></div>

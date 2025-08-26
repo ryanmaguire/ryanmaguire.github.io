@@ -1,0 +1,85 @@
+<div class="highlight"><pre><span></span><span class="cm">/******************************************************************************</span>
+<span class="cm"> *                                  LICENSE                                   *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  This file is part of mitx_mathematics_programming_examples.               *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  mitx_mathematics_programming_examples is free software: you can           *</span>
+<span class="cm"> *  redistribute it and/or modify it under the terms of the GNU General       *</span>
+<span class="cm"> *  Public License as published by the Free Software Foundation, either       *</span>
+<span class="cm"> *  version 3 of the License, or (at your option) any later version.          *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  mitx_mathematics_programming_examples is distributed in the hope that     *</span>
+<span class="cm"> *  it will be useful but WITHOUT ANY WARRANTY; without even the implied      *</span>
+<span class="cm"> *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.          *</span>
+<span class="cm"> *  See the GNU General Public License for more details.                      *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  You should have received a copy of the GNU General Public License         *</span>
+<span class="cm"> *  along with mitx_mathematics_programming_examples. If not, see             *</span>
+<span class="cm"> *  &lt;https://www.gnu.org/licenses/&gt;.                                          *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  Purpose:                                                                  *</span>
+<span class="cm"> *      Calculates the root of a function using Steffensen&#39;s method.          *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  Author: Ryan Maguire                                                      *</span>
+<span class="cm"> *  Date:   2025/05/22                                                        *</span>
+<span class="cm"> ******************************************************************************/</span>
+
+<span class="cm">/*  Type for a function of the form f: R -&gt; R.                                */</span>
+<span class="k">type</span> <span class="nc">RealFunc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">fn</span><span class="p">(</span><span class="kt">f64</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">f64</span><span class="p">;</span>
+
+<span class="cm">/*  Computes the root of a function using Steffensen&#39;s method.                */</span>
+<span class="k">fn</span> <span class="nf">steffensens_method</span><span class="p">(</span><span class="n">f</span>: <span class="nc">RealFunc</span><span class="p">,</span><span class="w"> </span><span class="n">x</span>: <span class="kt">f64</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">f64</span> <span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/*  Steffensen&#39;s method is iterative and converges very quickly.          *</span>
+<span class="cm">     *  Because of this we may exit the function after a few iterations.      */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">MAXIMUM_NUMBER_OF_ITERATIONS</span>: <span class="kt">u32</span> <span class="o">=</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  The maximum allowed error. This is 4x double precision epsilon.       */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">EPSILON</span>: <span class="kt">f64</span> <span class="o">=</span><span class="w"> </span><span class="mf">8.881784197001252E-16</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  The method starts at the provided guess point and updates iteratively.*/</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">xn</span>: <span class="kt">f64</span> <span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Iteratively apply Steffensen&#39;s method to find the root.               */</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="n">MAXIMUM_NUMBER_OF_ITERATIONS</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="cm">/*  Steffensen&#39;s method needs the evaluations f(x) and f(x + f(x)),   *</span>
+<span class="cm">         *  in particular the denominator is f(x + f(x)) / f(x) - 1. Compute. */</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">f_xn</span>: <span class="kt">f64</span> <span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">xn</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">let</span><span class="w"> </span><span class="n">g_xn</span>: <span class="kt">f64</span> <span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">(</span><span class="n">xn</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">f_xn</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">f_xn</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/*  Like Newton&#39;s method, the new point is obtained by subtracting    *</span>
+<span class="cm">         *  the ratio. g(x) = f(x + f(x)) / f(x) - 1 acts as the derivative   *</span>
+<span class="cm">         *  of f, but we do not explicitly need to calculate f&#39;(x).           */</span>
+<span class="w">        </span><span class="n">xn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xn</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">f_xn</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">g_xn</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/*  If f(x) is very small, we are close to a root and can break out   *</span>
+<span class="cm">         *  of this for loop. Check for this.                                 */</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">f_xn</span><span class="p">.</span><span class="n">abs</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">EPSILON</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/*  Like Newton&#39;s method, and like Heron&#39;s method, the convergence is     *</span>
+<span class="cm">     *  quadratic. After a few iterations we will be very to close a root.    */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">xn</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/*  End of steffensens_method.                                                */</span>
+
+<span class="cm">/*  sqrt(2) is a root to the function f(x) = 2 - x^2. Provide this.           */</span>
+<span class="k">fn</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span>: <span class="kt">f64</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="kt">f64</span> <span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*  Main routine used for testing our implementation of Steffensen&#39;s method.  */</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/*  The initial guess point for Steffensen&#39;s method.                      */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">X</span>: <span class="kt">f64</span> <span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Calculate the square root and print it to the screen. If we have      *</span>
+<span class="cm">     *  written things correctly, we should get 1.414..., which is sqrt(2).   */</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">sqrt_x</span>: <span class="kt">f64</span> <span class="o">=</span><span class="w"> </span><span class="n">steffensens_method</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">);</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;sqrt({}) = {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">sqrt_x</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

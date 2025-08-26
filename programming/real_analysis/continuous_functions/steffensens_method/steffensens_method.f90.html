@@ -1,0 +1,143 @@
+<div class="highlight"><pre><span></span><span class="c">!------------------------------------------------------------------------------!</span>
+<span class="c">!                                   LICENSE                                    !</span>
+<span class="c">!------------------------------------------------------------------------------!</span>
+<span class="c">!   This file is part of mitx_mathematics_programming_examples.                !</span>
+<span class="c">!                                                                              !</span>
+<span class="c">!   mitx_mathematics_programming_examples is free software: you can            !</span>
+<span class="c">!   redistribute it and/or modify it under the terms of the GNU General Public !</span>
+<span class="c">!   License as published by the Free Software Foundation, either version 3 of  !</span>
+<span class="c">!   the License, or (at your option) any later version.                        !</span>
+<span class="c">!                                                                              !</span>
+<span class="c">!   mitx_mathematics_programming_examples is distributed in the hope that it   !</span>
+<span class="c">!   will be useful but WITHOUT ANY WARRANTY; without even the implied warranty !</span>
+<span class="c">!   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           !</span>
+<span class="c">!   GNU General Public License for more details.                               !</span>
+<span class="c">!                                                                              !</span>
+<span class="c">!   You should have received a copy of the GNU General Public License          !</span>
+<span class="c">!   along with mitx_mathematics_programming_examples.  If not, see             !</span>
+<span class="c">!   &lt;https://www.gnu.org/licenses/&gt;.                                           !</span>
+<span class="c">!------------------------------------------------------------------------------!</span>
+<span class="c">!   Purpose:                                                                   !</span>
+<span class="c">!       Calculates roots using Steffensen&#39;s method.                            !</span>
+<span class="c">!------------------------------------------------------------------------------!</span>
+<span class="c">!   Author: Ryan Maguire                                                       !</span>
+<span class="c">!   Date:   2025/05/25                                                         !</span>
+<span class="c">!------------------------------------------------------------------------------!</span>
+<span class="k">MODULE </span><span class="n">STEFFENSEN</span>
+
+<span class="w">    </span><span class="k">IMPLICIT NONE</span>
+
+<span class="w">    </span><span class="c">! Steffensen&#39;s method is iterative. The convergence is quadratic, meaning</span>
+<span class="w">    </span><span class="c">! the number of accurate decimals doubles with each iteration. Because of</span>
+<span class="w">    </span><span class="c">! this we can halt the algorithm after a few steps.</span>
+<span class="w">    </span><span class="kt">INTEGER</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">MAXIMUM_NUMBER_OF_ITERATIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16</span>
+
+<span class="w">    </span><span class="c">! Maximum allowed error. This is 4x double precision epsilon.</span>
+<span class="w">    </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="nb">EPSILON</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">8.881784197001252E-16</span>
+
+<span class="w">    </span><span class="k">CONTAINS</span>
+
+<span class="w">    </span><span class="c">!--------------------------------------------------------------------------!</span>
+<span class="w">    </span><span class="c">!   Function:                                                              !</span>
+<span class="w">    </span><span class="c">!       STEFFENSENS_METHOD                                                 !</span>
+<span class="w">    </span><span class="c">!   Purpose:                                                               !</span>
+<span class="w">    </span><span class="c">!       Computes roots using Steffensen&#39;s method.                          !</span>
+<span class="w">    </span><span class="c">!   Arguments:                                                             !</span>
+<span class="w">    </span><span class="c">!       FUNC (FUNCTION):                                                   !</span>
+<span class="w">    </span><span class="c">!           A function f: R -&gt; R.                                          !</span>
+<span class="w">    </span><span class="c">!       X (REAL):                                                          !</span>
+<span class="w">    </span><span class="c">!           The initial guess for the root of func.                        !</span>
+<span class="w">    </span><span class="c">!   OUTPUT:                                                                !</span>
+<span class="w">    </span><span class="c">!       ROOT (REAL):                                                       !</span>
+<span class="w">    </span><span class="c">!           A root for FUNC.                                               !</span>
+<span class="w">    </span><span class="c">!--------------------------------------------------------------------------!</span>
+<span class="w">    </span><span class="k">FUNCTION </span><span class="n">STEFFENSENS_METHOD</span><span class="p">(</span><span class="n">FUNC</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">IMPLICIT NONE</span>
+
+<span class="w">        </span><span class="c">! FUNC is a function f: R -&gt; R. Define this.</span>
+<span class="w">        </span><span class="k">INTERFACE</span>
+<span class="k">            FUNCTION </span><span class="n">FUNC</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="w">                </span><span class="k">IMPLICIT NONE</span>
+<span class="k">                </span><span class="kt">REAL</span><span class="p">,</span><span class="w"> </span><span class="k">INTENT</span><span class="p">(</span><span class="n">IN</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">X</span>
+<span class="w">                </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">FUNC</span>
+<span class="w">            </span><span class="k">END FUNCTION </span><span class="n">FUNC</span>
+<span class="w">        </span><span class="k">END INTERFACE</span>
+
+<span class="w">        </span><span class="c">! The input is a real number, the guess for Steffensen&#39;s method.</span>
+<span class="w">        </span><span class="kt">REAL</span><span class="p">,</span><span class="w"> </span><span class="k">INTENT</span><span class="p">(</span><span class="n">IN</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">X</span>
+
+<span class="w">        </span><span class="c">! The output is also a positive real number, the root of FUNC.</span>
+<span class="w">        </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">STEFFENSENS_METHOD</span>
+
+<span class="w">        </span><span class="c">! Dummy variable for keeping track of how many iterations we&#39;ve done.</span>
+<span class="w">        </span><span class="kt">INTEGER</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ITERS</span>
+
+<span class="w">        </span><span class="c">! Steffensen&#39;s method is similar to Newton&#39;s method. At each step we</span>
+<span class="w">        </span><span class="c">! Calculate the function F evaluated at the new approximation, and</span>
+<span class="w">        </span><span class="c">! also compute a function G that acts as the derivative of F. Provide</span>
+<span class="w">        </span><span class="c">! variables for these two evaluations.</span>
+<span class="w">        </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">F_XN</span><span class="p">,</span><span class="w"> </span><span class="n">G_XN</span>
+
+<span class="w">        </span><span class="c">! Variable for the updated approximations.</span>
+<span class="w">        </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">XN</span>
+
+<span class="w">        </span><span class="c">! Steffensen&#39;s method starts the process at the guess point.</span>
+<span class="w">        </span><span class="n">XN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span>
+
+<span class="w">        </span><span class="c">! Iteratively perform Steffensen&#39;s method.</span>
+<span class="w">        </span><span class="k">DO </span><span class="n">ITERS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">MAXIMUM_NUMBER_OF_ITERATIONS</span>
+
+<span class="w">            </span><span class="c">! Steffensen&#39;s method needs the evaluations f(x) and f(x + f(x)),</span>
+<span class="w">            </span><span class="c">! in particular the denominator is f(x + f(x)) / f(x) - 1.</span>
+<span class="w">            </span><span class="n">F_XN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FUNC</span><span class="p">(</span><span class="n">XN</span><span class="p">)</span>
+<span class="w">            </span><span class="n">G_XN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FUNC</span><span class="p">(</span><span class="n">XN</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">F_XN</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">F_XN</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0</span>
+
+<span class="w">            </span><span class="c">! Like Newton&#39;s method the new point is obtained by subtracting</span>
+<span class="w">            </span><span class="c">! the ratio. g(x) = f(x + f(x))/f(x) - 1 acts as the derivative</span>
+<span class="w">            </span><span class="c">! of f, but we do not explicitly need to calculate f&#39;(x).</span>
+<span class="w">            </span><span class="n">XN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">XN</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">F_XN</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">G_XN</span>
+
+<span class="w">            </span><span class="c">! If f(x) is very small, we are close to a root and can break</span>
+<span class="w">            </span><span class="c">! out of this loop. Check for this.</span>
+<span class="w">            </span><span class="k">IF</span><span class="w"> </span><span class="p">(</span><span class="nb">ABS</span><span class="p">(</span><span class="n">F_XN</span><span class="p">)</span><span class="w"> </span><span class="p">.</span><span class="n">LE</span><span class="p">.</span><span class="w"> </span><span class="nb">EPSILON</span><span class="p">)</span><span class="w"> </span><span class="k">THEN</span>
+<span class="k">                EXIT</span>
+<span class="k">            END IF</span>
+
+<span class="k">        END DO</span>
+
+<span class="w">        </span><span class="c">! Like Newton&#39;s method, and like Heron&#39;s method, the convergence is</span>
+<span class="w">        </span><span class="c">! quadratic. After a few iterations we will be very to close a root.</span>
+<span class="w">        </span><span class="n">STEFFENSENS_METHOD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">XN</span>
+<span class="w">    </span><span class="k">END FUNCTION </span><span class="n">STEFFENSENS_METHOD</span>
+
+<span class="w">    </span><span class="c">! Provide the function f(x) = 2 - x^2. sqrt(2) is a root.</span>
+<span class="w">    </span><span class="k">FUNCTION </span><span class="n">FUNC</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="w">        </span><span class="k">IMPLICIT NONE</span>
+<span class="k">        </span><span class="kt">REAL</span><span class="p">,</span><span class="w"> </span><span class="k">INTENT</span><span class="p">(</span><span class="n">IN</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">X</span>
+<span class="w">        </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">FUNC</span>
+<span class="w">        </span><span class="n">FUNC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span>
+
+<span class="w">    </span><span class="k">END FUNCTION </span><span class="n">FUNC</span>
+
+<span class="k">END MODULE </span><span class="n">STEFFENSEN</span>
+
+<span class="c">! Program for testing our implementation of Steffensen&#39;s method.</span>
+<span class="k">PROGRAM </span><span class="n">MAIN</span>
+
+<span class="w">    </span><span class="k">USE </span><span class="n">STEFFENSEN</span>
+<span class="w">    </span><span class="k">IMPLICIT NONE</span>
+
+<span class="w">    </span><span class="c">! 2 is close enough to sqrt(2) for Steffensen&#39;s method to converge.</span>
+<span class="w">    </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span>
+
+<span class="w">    </span><span class="c">! Variable for the output.</span>
+<span class="w">    </span><span class="kt">REAL</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">SQRT_2</span>
+
+<span class="w">    </span><span class="c">! Run the routine, compute sqrt(2), and print the result.</span>
+<span class="w">    </span><span class="n">SQRT_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">STEFFENSENS_METHOD</span><span class="p">(</span><span class="n">FUNC</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">)</span>
+<span class="w">    </span><span class="k">PRINT</span><span class="w"> </span><span class="s2">&quot;(A,F18.16)&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;sqrt(2) = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">SQRT_2</span>
+
+<span class="k">END PROGRAM </span><span class="n">MAIN</span>
+</pre></div>

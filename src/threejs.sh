@@ -7,8 +7,6 @@ find . -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} \;
 
 files=$(find "$SOURCE_PATH" \( -name "*.html" -o -name "*.js" \))
 
-echo $files
-
 for file in $files; do
 
     extension="${file##*.}"

@@ -1,0 +1,103 @@
+<div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#                                   LICENSE                                    #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#   This file is part of mitx_mathematics_programming_examples.                #</span>
+<span class="sd">#                                                                              #</span>
+<span class="sd">#   mitx_mathematics_programming_examples is free software: you can            #</span>
+<span class="sd">#   redistribute it and/or modify it under the terms of the GNU General        #</span>
+<span class="sd">#   Public License as published by the Free Software Foundation, either        #</span>
+<span class="sd">#   version 3 of the License, or (at your option) any later version.           #</span>
+<span class="sd">#                                                                              #</span>
+<span class="sd">#   mitx_mathematics_programming_examples is distributed in the hope that      #</span>
+<span class="sd">#   it will be useful but WITHOUT ANY WARRANTY; without even the implied       #</span>
+<span class="sd">#   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.           #</span>
+<span class="sd">#   See the GNU General Public License for more details.                       #</span>
+<span class="sd">#                                                                              #</span>
+<span class="sd">#   You should have received a copy of the GNU General Public License          #</span>
+<span class="sd">#   along with mitx_mathematics_programming_examples. If not, see              #</span>
+<span class="sd">#   &lt;https://www.gnu.org/licenses/&gt;.                                           #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#   Purpose:                                                                   #</span>
+<span class="sd">#       Calculates square roots using Heron&#39;s method.                          #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">#   Author: Ryan Maguire                                                       #</span>
+<span class="sd">#   Date:   2025/03/08                                                         #</span>
+<span class="sd">################################################################################</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Pylint doesn&#39;t like &quot;x&quot; as a variable name. Disable this warning.</span>
+<span class="c1"># pylint: disable = invalid-name</span>
+
+<span class="c1"># Computes the square root of a positive real number via Heron&#39;s method.</span>
+<span class="k">def</span> <span class="nf">herons_method</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function:</span>
+<span class="sd">            herons_method</span>
+<span class="sd">        Purpose:</span>
+<span class="sd">            Applies Heron&#39;s method to a positive real number, returning</span>
+<span class="sd">            the square root of it.</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            x (float):</span>
+<span class="sd">                A positive real number.</span>
+<span class="sd">        Output:</span>
+<span class="sd">            sqrt_x (float):</span>
+<span class="sd">                The square root of x.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Heron&#39;s method only works for strictly positive real numbers.</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input must be a positive real number.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Heron&#39;s method is iterative and the convergence is quadratic. This</span>
+    <span class="c1"># means that if a_{n} has N correct decimals, then a_{n+1} will have</span>
+    <span class="c1"># 2N correct decimals. A standard 64-bit double can fit about 16</span>
+    <span class="c1"># decimals of precision (the exact value is 2^-52 ~= 2.22x10^-16).</span>
+    <span class="c1"># Because of this we may exit the function after a few iterations.</span>
+    <span class="n">maximum_number_of_iterations</span> <span class="o">=</span> <span class="mi">16</span>
+
+    <span class="c1"># The maximum allowed error. This is double precision epsilon.</span>
+    <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">2.220446049250313E-16</span>
+
+    <span class="c1"># Set the initial guess to the input. Provided x is positive, Heron&#39;s</span>
+    <span class="c1"># method will indeed converge.</span>
+    <span class="n">approximate_root</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="c1"># Iteratively loop through and obtain better approximations for sqrt(x).</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maximum_number_of_iterations</span><span class="p">):</span>
+
+        <span class="c1"># If we are within epsilon of the correct value we may break out of</span>
+        <span class="c1"># this for-loop. Use the absolute value function to check.</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">approximate_root</span> <span class="o">*</span> <span class="n">approximate_root</span><span class="p">)</span> <span class="o">/</span> <span class="n">x</span>
+
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">epsilon</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="c1"># Apply Heron&#39;s method to get a better approximation for the root.</span>
+        <span class="n">approximate_root</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">approximate_root</span> <span class="o">+</span> <span class="n">x</span> <span class="o">/</span> <span class="n">approximate_root</span><span class="p">)</span>
+
+    <span class="c1"># As long as x is positive and not very large, we should have a very</span>
+    <span class="c1"># good approximation for sqrt(x). Heron&#39;s method will still work for</span>
+    <span class="c1"># very large x, but we must increase maximum_number_of_iterations.</span>
+    <span class="k">return</span> <span class="n">approximate_root</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main routine for testing our implementation of Heron&#39;s method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mf">2.0</span>
+    <span class="n">sqrt_x</span> <span class="o">=</span> <span class="n">herons_method</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sqrt(</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">) = </span><span class="si">{</span><span class="n">sqrt_x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+
+<span class="c1"># We can run this using the standard Python implementation, C-Python:</span>
+<span class="c1">#   https://www.python.org/downloads/</span>
+<span class="c1"># Once installed, run:</span>
+<span class="c1">#   python3 herons_method.py</span>
+<span class="c1"># Depending on your platform you may need to replace &quot;python3&quot; with &quot;python&quot;</span>
+<span class="c1"># or &quot;py&quot; or &quot;py3&quot;. This will output:</span>
+<span class="c1">#   sqrt(2.0) = 1.414213562373095</span>
+<span class="c1"># This has relative error 1.570092458683775E-16.</span>
+</pre></div>

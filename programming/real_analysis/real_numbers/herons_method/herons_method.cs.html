@@ -1,0 +1,101 @@
+<div class="highlight"><pre><span></span><span class="cm">/******************************************************************************</span>
+<span class="cm"> *                                  LICENSE                                   *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  This file is part of mitx_mathematics_programming_examples.               *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  mitx_mathematics_programming_examples is free software: you can           *</span>
+<span class="cm"> *  redistribute it and/or modify it under the terms of the GNU General       *</span>
+<span class="cm"> *  Public License as published by the Free Software Foundation, either       *</span>
+<span class="cm"> *  version 3 of the License, or (at your option) any later version.          *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  mitx_mathematics_programming_examples is distributed in the hope that     *</span>
+<span class="cm"> *  it will be useful but WITHOUT ANY WARRANTY; without even the implied      *</span>
+<span class="cm"> *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.          *</span>
+<span class="cm"> *  See the GNU General Public License for more details.                      *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  You should have received a copy of the GNU General Public License         *</span>
+<span class="cm"> *  along with mitx_mathematics_programming_examples. If not, see             *</span>
+<span class="cm"> *  &lt;https://www.gnu.org/licenses/&gt;.                                          *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  Purpose:                                                                  *</span>
+<span class="cm"> *      Calculates square roots using Heron&#39;s method.                         *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  Author: Ryan Maguire                                                      *</span>
+<span class="cm"> *  Date:   2025/03/08                                                        *</span>
+<span class="cm"> ******************************************************************************/</span>
+
+<span class="cm">/*  Console.WriteLine and Math.Abs are both provided here.                    */</span>
+<span class="k">using</span><span class="w"> </span><span class="nn">System</span><span class="p">;</span>
+
+<span class="cm">/*  Class providing an implementation of Heron&#39;s method.                      */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Heron</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/*  Heron&#39;s method is iterative and the convergence is quadratic. This    *</span>
+<span class="cm">     *  means that if a_{n} has N correct decimals, then a_{n+1} will have    *</span>
+<span class="cm">     *  2N correct decimals. A standard 64-bit double can fit about 16        *</span>
+<span class="cm">     *  decimals of precision (the exact value is 2^-52 ~= 2.22x10^-16).      *</span>
+<span class="cm">     *  Because of this we may exit the function after a few iterations.      *</span>
+<span class="cm">     *                                                                        *</span>
+<span class="cm">     *  Note:                                                                 *</span>
+<span class="cm">     *      We are declaring the following integer as &quot;unsigned&quot; meaning      *</span>
+<span class="cm">     *      non-negative. The &quot;U&quot; after the number is the suffix for unsigned *</span>
+<span class="cm">     *      constants in C#. It simply means unsigned.                        */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint</span><span class="w"> </span><span class="n">maximumNumberOfIterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="n">U</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  The maximum allowed error. This is 4x double precision epsilon.       */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">epsilon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8.881784197001252E-16</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Computes square roots using Heron&#39;s method.                           */</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">HeronsMethod</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/*  Dummy variable for keeping track of the number of iterations.     */</span>
+<span class="w">        </span><span class="kt">uint</span><span class="w"> </span><span class="n">iters</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/*  Initial approximation for Heron&#39;s method. Choose the input.       */</span>
+<span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">approximateRoot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/*  Loop through and iteratively apply Heron&#39;s method.                */</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">iters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span><span class="n">iters</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">maximumNumberOfIterations</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">iters</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="cm">/*  If we are within epsilon of the correct value we may break    *</span>
+<span class="cm">             *  break out of this for-loop. Check for this.                   */</span>
+<span class="w">            </span><span class="kt">double</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">approximateRoot</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">approximateRoot</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="n">Abs</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">epsilon</span><span class="p">)</span>
+<span class="w">                </span><span class="k">break</span><span class="p">;</span>
+
+<span class="w">            </span><span class="cm">/*  Otherwise, improve our approximation using Heron&#39;s method.    */</span>
+<span class="w">            </span><span class="n">approximateRoot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">approximateRoot</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">approximateRoot</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="cm">/*  Provided x is positive and not very large, we should have an      *</span>
+<span class="cm">         *  excellent approximation for sqrt(x). Heron&#39;s method does indeed   *</span>
+<span class="cm">         *  work for large x, but we may need to increase the value of        *</span>
+<span class="cm">         *  maximumNumberOfIterations.                                        */</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">approximateRoot</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="cm">/*  End of HeronsMethod.                                                  */</span>
+
+<span class="w">    </span><span class="cm">/*  Routine for testing our implementation of Heron&#39;s method.             */</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">Main</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/*  Compute sqrt(2) using Heron&#39;s method and print the result.        */</span>
+<span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2.0</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">sqrtX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HeronsMethod</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">$&quot;sqrt({x}) = {sqrtX}&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*  On Windows you can use Microsoft&#39;s C# compiler. Type:                     *</span>
+<span class="cm"> *      csc herons_method.cs -out:main.exe                                    *</span>
+<span class="cm"> *      main.exe                                                              *</span>
+<span class="cm"> *  This will output:                                                         *</span>
+<span class="cm"> *      sqrt(2) = 1.41421356237309                                            *</span>
+<span class="cm"> *  This has a relative error of 3.611212654972683e-15. Note, csc only prints *</span>
+<span class="cm"> *  a double to 15 decimals, the last digit is rounded.                       *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  On GNU, Linux, FreeBSD, macOS, etc., you can use the mono C# compiler:    *</span>
+<span class="cm"> *      mcs herons_method.cs -out:main                                        *</span>
+<span class="cm"> *      ./main                                                                *</span>
+<span class="cm"> *  This produces the same result.                                            */</span>
+</pre></div>
