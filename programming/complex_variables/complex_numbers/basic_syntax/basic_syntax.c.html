@@ -18,62 +18,95 @@
 <span class="cm"> *  &lt;https://www.gnu.org/licenses/&gt;.                                          *</span>
 <span class="cm"> ******************************************************************************</span>
 <span class="cm"> *  Purpose:                                                                  *</span>
-<span class="cm"> *      Provides basic syntax for complex numbers using the C99 standard.     *</span>
+<span class="cm"> *      Provides basic syntax for complex numbers using the C89 standard.     *</span>
 <span class="cm"> ******************************************************************************</span>
 <span class="cm"> *  Author: Ryan Maguire                                                      *</span>
 <span class="cm"> *  Date:   2024/11/04                                                        *</span>
 <span class="cm"> ******************************************************************************/</span>
 
-<span class="cm">/*  Complex numbers and complex functions are found here.                     */</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;complex.h&gt;</span>
-
-<span class="cm">/*  The printf function, used for printing messages, provided here.           */</span>
+<span class="cm">/*  As before, stdio.h provides the &quot;printf&quot; function.                        */</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
+<span class="cm">/*  The standard library provides sqrt and atan2. sqrt computes the square    *</span>
+<span class="cm"> *  root of a non-negative real number, and atan2 computes the angle the      *</span>
+<span class="cm"> *  point (x, y) in the plane makes with the x axis.                          */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;math.h&gt;</span>
+
+<span class="cm">/*  Mimicing other programming libraries, let&#39;s define a complex number as an *</span>
+<span class="cm"> *  ordered pair of real numbers.                                             */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">real</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">imag</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="k">complex</span><span class="p">;</span>
+
+<span class="cm">/*  UNIMPORTANT NOTE.                                                         *</span>
+<span class="cm"> *      Every function to follow (except main) will have the word &quot;static&quot;    *</span>
+<span class="cm"> *      before it. This simply means the function is only used in this file.  *</span>
+<span class="cm"> *      Since this is a small demo, and not a programming library, every      *</span>
+<span class="cm"> *      function is declared &quot;static.&quot; Doing this makes compilers happier.    *</span>
+<span class="cm"> *      The student can simply ignore this keyword.                           */</span>
+
+<span class="cm">/*  This function computes the real part of a complex number. It is           *</span>
+<span class="cm"> *  equivalent to Re(z) in our notation.                                      */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">real_part</span><span class="p">(</span><span class="k">complex</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/*  To access the elements in our &quot;struct&quot;, we use dot notation.          *</span>
+<span class="cm">     *  z is a struct with variables &quot;real&quot; and &quot;imag&quot; stored inside.         *</span>
+<span class="cm">     *  To access the &quot;real&quot; variable, we write z.real.                       *</span>
+<span class="cm">     *  Return this to compute the real part of z.                            */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">real</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*  Similarly, this function computes Im(z).                                  */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">imag_part</span><span class="p">(</span><span class="k">complex</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/*  To access imag, write z.imag.                                         */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">imag</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*  This function computes the magnitude of z.                                */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">modulus</span><span class="p">(</span><span class="k">complex</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/*  Use the Pythagorean formula to compute |z|.                           */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">real_squared</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">real</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">real</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">imag_squared</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">imag</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">imag</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Pythagoras: Square root of the sum of the squares.                    */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="n">real_squared</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">imag_squared</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*  Computes the principal argument of z.                                     */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">principal_argument</span><span class="p">(</span><span class="k">complex</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/*  math.h provides atan2, which computes the angle the point (x, y)      *</span>
+<span class="cm">     *  makes with the positive x axis. This is the unique number theta, with *</span>
+<span class="cm">     *  -pi &lt; theta &lt;= pi, that contains (x, y) on the ray of angle theta. By *</span>
+<span class="cm">     *  convention, atan2(0, 0) = 0.                                          *</span>
+<span class="cm">     *                                                                        *</span>
+<span class="cm">     *  NOTE:                                                                 *</span>
+<span class="cm">     *      The syntax is theta = atan2(y, x). DO NOT WRITE atan2(x, y).      */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">atan2</span><span class="p">(</span><span class="n">z</span><span class="p">.</span><span class="n">imag</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">.</span><span class="n">real</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/*  Same routine as before, printing out some values using our new functions. */</span>
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">    </span><span class="cm">/*  C provides the variable &quot;_Complex_I&quot; which is the imaginary unit.     *</span>
-<span class="cm">     *  Let us label this as &quot;i&quot; to make this program easier to read. The     *</span>
-<span class="cm">     *  expression (complex double) that appears before the variable just     *</span>
-<span class="cm">     *  means we want our variable to be complex and &quot;double&quot; precision,      *</span>
-<span class="cm">     *  which is computer-talk for numbers that have decimal points (as       *</span>
-<span class="cm">     *  opposed to integers which don&#39;t have decimal points).                 */</span>
-<span class="w">    </span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="p">)</span><span class="n">_Complex_I</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/*  Lacking a compiler that implements complex numbers directly, we       *</span>
+<span class="cm">     *  create complex numbers using &quot;struct&quot; syntax. This looks as follows.  */</span>
+<span class="w">    </span><span class="k">complex</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">};</span><span class="w"> </span><span class="cm">/* This is z = 1 + i. */</span>
 
-<span class="w">    </span><span class="cm">/*  We can now create the complex number z = 1 + i.                       */</span>
-<span class="w">    </span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/*  Get the real and imaginary parts of z.                                */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">real_part</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">imag_part</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
 
-<span class="w">    </span><span class="cm">/*  complex.h provides creal and cimag, which compute the real and        *</span>
-<span class="cm">     *  imaginary parts of a complex number.                                  */</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">creal</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cimag</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="cm">/*  And get the polar form of z.                                          */</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modulus</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">theta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">principal_argument</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
 
-<span class="w">    </span><span class="cm">/*  We can also compute the modulus and the principal argument using the  *</span>
-<span class="cm">     *  standard library. complex.h provides &quot;cabs&quot; and &quot;carg&quot;.               */</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cabs</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">theta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">carg</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
-
-<span class="w">    </span><span class="cm">/*  Let&#39;s print our work to the screen. printf works as follows. It takes *</span>
-<span class="cm">     *  a &quot;formatted string&quot;, which is a bunch of characters that form the    *</span>
-<span class="cm">     *  message we want to print. By formatted, we mean that every time we    *</span>
-<span class="cm">     *  want to print a (double) variable, we write %f. After our message is  *</span>
-<span class="cm">     *  done, we pass the variables to the function in the order they appear  *</span>
-<span class="cm">     *  in the message. So:                                                   *</span>
-<span class="cm">     *      &quot;z = %f + %f i&quot;, x, y                                             *</span>
-<span class="cm">     *  will print z = 1.0 + 1.0 i, instead of printing z = x + i y. That is, *</span>
-<span class="cm">     *  by using this formatting we can print the value of the variable, and  *</span>
-<span class="cm">     *  not the variable itself.                                              *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *  Note that our message ends with &quot;\n&quot; which means means &quot;new-line.&quot;    *</span>
-<span class="cm">     *  This is equivalent to hitting the enter key to move on to the next    *</span>
-<span class="cm">     *  line in a text.                                                       */</span>
+<span class="w">    </span><span class="cm">/*  Print everything to the screen, just as before.                       */</span>
 <span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;z = %f + %f i</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
-
-<span class="w">    </span><span class="cm">/*  We can print the polar form as well.                                  */</span>
 <span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;|z| = |%f + %f i| = %f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span>
 <span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Arg(z) = Arg(%f + %f i) = %f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">theta</span><span class="p">);</span>
-
-<span class="w">    </span><span class="cm">/*  We are done with the function. &quot;return 0&quot; tells the function to exit. */</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
