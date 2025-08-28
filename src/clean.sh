@@ -1,5 +1,6 @@
 CURRENT_PATH="$(pwd)"
 
+rm -f threejs.markdown
 rm -rf .jekyll-cache
 cd ../
 
