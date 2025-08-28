@@ -16,3 +16,4 @@ rm -rf site
 
 cd "$CURRENT_PATH"
 rm -rf programming
+rm -rf .jekyll-cache
