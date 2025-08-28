@@ -1,134 +1,85 @@
-<div class="highlight"><pre><span></span><span class="cm">/******************************************************************************</span>
-<span class="cm"> *                                  LICENSE                                   *</span>
-<span class="cm"> ******************************************************************************</span>
-<span class="cm"> *  This file is part of mitx_mathematics_programming_examples.               *</span>
-<span class="cm"> *                                                                            *</span>
-<span class="cm"> *  mitx_mathematics_programming_examples is free software: you can           *</span>
-<span class="cm"> *  redistribute it and/or modify it under the terms of the GNU General       *</span>
-<span class="cm"> *  Public License as published by the Free Software Foundation, either       *</span>
-<span class="cm"> *  version 3 of the License, or (at your option) any later version.          *</span>
-<span class="cm"> *                                                                            *</span>
-<span class="cm"> *  mitx_mathematics_programming_examples is distributed in the hope that     *</span>
-<span class="cm"> *  it will be useful but WITHOUT ANY WARRANTY; without even the implied      *</span>
-<span class="cm"> *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.          *</span>
-<span class="cm"> *  See the GNU General Public License for more details.                      *</span>
-<span class="cm"> *                                                                            *</span>
-<span class="cm"> *  You should have received a copy of the GNU General Public License         *</span>
-<span class="cm"> *  along with mitx_mathematics_programming_examples. If not, see             *</span>
-<span class="cm"> *  &lt;https://www.gnu.org/licenses/&gt;.                                          *</span>
-<span class="cm"> ******************************************************************************</span>
-<span class="cm"> *  Purpose:                                                                  *</span>
-<span class="cm"> *      Calculates square roots using Heron&#39;s method.                         *</span>
-<span class="cm"> ******************************************************************************</span>
-<span class="cm"> *  Author: Ryan Maguire                                                      *</span>
-<span class="cm"> *  Date:   2025/03/08                                                        *</span>
-<span class="cm"> ******************************************************************************/</span>
+<div class="highlight"><pre><span></span><span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%                                   LICENSE                                    %</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%   This file is part of mitx_mathematics_programming_examples.                %</span>
+<span class="c">%                                                                              %</span>
+<span class="c">%   mitx_mathematics_programming_examples is free software: you can            %</span>
+<span class="c">%   redistribute it and/or modify it under the terms of the GNU General Public %</span>
+<span class="c">%   License as published by the Free Software Foundation, either version 3 of  %</span>
+<span class="c">%   the License, or (at your option) any later version.                        %</span>
+<span class="c">%                                                                              %</span>
+<span class="c">%   mitx_mathematics_programming_examples is distributed in the hope that it   %</span>
+<span class="c">%   will be useful, but WITHOUT ANY WARRANTY; without even the implied         %</span>
+<span class="c">%   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  %</span>
+<span class="c">%   GNU General Public License for more details.                               %</span>
+<span class="c">%                                                                              %</span>
+<span class="c">%   You should have received a copy of the GNU General Public License          %</span>
+<span class="c">%   along with mitx_mathematics_programming_examples.  If not, see             %</span>
+<span class="c">%   &lt;https://www.gnu.org/licenses/&gt;.                                           %</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%   Purpose:                                                                   %</span>
+<span class="c">%       Calculates square roots using Heron&#39;s method.                          %</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%   Author:     Ryan Maguire                                                   %</span>
+<span class="c">%   Date:       March 9, 2025.                                                 %</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 
-<span class="cm">/*  stdio.h provides the &quot;printf&quot; function, used for printing text.           */</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%   Function:                                                                  %</span>
+<span class="c">%       herons_method                                                          %</span>
+<span class="c">%   Purpose:                                                                   %</span>
+<span class="c">%       Computes square roots of positive real numbers using Heron&#39;s method.   %</span>
+<span class="c">%   Arguments:                                                                 %</span>
+<span class="c">%       x (real):                                                              %</span>
+<span class="c">%           A positive real number, the input to the square root function.     %</span>
+<span class="c">%   Output:                                                                    %</span>
+<span class="c">%       sqrt_x (real):                                                         %</span>
+<span class="c">%           The square root of the input.                                      %</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="k">function</span><span class="w"> </span>approximate_root<span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nf">herons_method</span><span class="p">(</span>x<span class="p">)</span>
 
-<span class="cm">/*  Floating-point absolute value function, fabs, provided here.              */</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;math.h&gt;</span>
+<span class="w">    </span><span class="c">% Heron&#39;s method is iterative and the convergence is quadratic. This</span>
+<span class="w">    </span><span class="c">% means that if a_{n} has N correct decimals, then a_{n+1} will have</span>
+<span class="w">    </span><span class="c">% 2N correct decimals. A standard 64-bit double can fit about 16</span>
+<span class="w">    </span><span class="c">% decimals of precision (the exact value is 2^-52 ~= 2.22x10^-16).</span>
+<span class="w">    </span><span class="c">% Because of this we may exit the function after a few iterations.</span>
+<span class="w">    </span><span class="n">maximum_number_of_iterations</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span>
 
-<span class="cm">/*  NSObject, the base class for all Objective-C classes, found here.         */</span>
-<span class="cp">#import &lt;Foundation/Foundation.h&gt;</span>
+<span class="w">    </span><span class="c">% The maximum allowed error. This is 4x double precision epsilon.</span>
+<span class="w">    </span><span class="n">epsilon</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">8.881784197001252E-16</span><span class="p">;</span>
 
-<span class="cm">/*  Simple class with a single method, square root via Heron&#39;s method.        */</span>
-<span class="k">@interface</span> <span class="nc">Heron</span>: <span class="bp">NSObject</span>
-<span class="w">    </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="n">sqrt</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">x</span><span class="p">;</span>
-<span class="k">@end</span>
+<span class="w">    </span><span class="c">% Set the initial guess to the input. Provided x is positive, Heron&#39;s</span>
+<span class="w">    </span><span class="c">% method will indeed converge.</span>
+<span class="w">    </span><span class="n">approximate_root</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
 
-<span class="cm">/*  Class providing an implementation of sqrt using Heron&#39;s method.           */</span>
-<span class="k">@implementation</span> <span class="nc">Heron</span>
+<span class="w">    </span><span class="c">% Iteratively apply Heron&#39;s method.</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span><span class="n">maximum_number_of_iterations</span>
 
-<span class="w">    </span><span class="cm">/*  Heron&#39;s method is iterative and the convergence is quadratic. This    *</span>
-<span class="cm">     *  means that if a_{n} has N correct decimals, then a_{n+1} will have    *</span>
-<span class="cm">     *  2N correct decimals. A standard 64-bit double can fit about 16        *</span>
-<span class="cm">     *  decimals of precision (the exact value is 2^-52 ~= 2.22x10^-16).      *</span>
-<span class="cm">     *  Because of this we may exit the function after a few iterations.      *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *  Note:                                                                 *</span>
-<span class="cm">     *      We are declaring the following integer as &quot;unsigned&quot; meaning      *</span>
-<span class="cm">     *      non-negative. The &quot;U&quot; after the number is the suffix for unsigned *</span>
-<span class="cm">     *      constants in Objective-C. It simply means unsigned.               */</span>
-<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">maximum_number_of_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16U</span><span class="p">;</span>
+<span class="w">        </span><span class="c">% If the error is small we can break out of this for-loop. Check.</span>
+<span class="w">        </span><span class="nb">error</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">approximate_root</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">approximate_root</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
 
-<span class="w">    </span><span class="cm">/*  The maximum allowed error. This is 4x double precision epsilon.       */</span>
-<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">epsilon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">8.881784197001252E-16</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="nb">error</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">epsilon</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="k">end</span>
 
-<span class="w">    </span><span class="cm">/*  Computes square roots of positive real numbers via Heron&#39;s method.    */</span>
-<span class="w">    </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="n">sqrt</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">x</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="cm">/*  Variable for keeping track of the number of iterations.           */</span>
-<span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">iters</span><span class="p">;</span>
+<span class="w">        </span><span class="c">% Otherwise improve the approximation using Heron&#39;s method.</span>
+<span class="w">        </span><span class="n">approximate_root</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">approximate_root</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">approximate_root</span><span class="p">);</span>
 
-<span class="w">        </span><span class="cm">/*  Set the initial guess to the input. Provided x is positive,       *</span>
-<span class="cm">         *  Heron&#39;s method will indeed converge.                              */</span>
-<span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">approximate_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="k">end</span>
 
-<span class="w">        </span><span class="cm">/*  Iteratively loop through and obtain better approximations.        */</span>
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">iters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">iters</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">maximum_number_of_iterations</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">iters</span><span class="p">)</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="cm">/*  If we are within epsilon of the correct value we may break    *</span>
-<span class="cm">             *  out of this for-loop. Check the relative error.               */</span>
-<span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">approximate_root</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">approximate_root</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="k">end</span>
 
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fabs</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">epsilon</span><span class="p">)</span>
-<span class="w">                </span><span class="k">break</span><span class="p">;</span>
+<span class="c">% Test out our implementation by computing the square root of 2.</span>
+<span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">2.0</span><span class="p">;</span>
+<span class="n">sqrt_x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">herons_method</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">&quot;sqrt(%.1f) = %.16f\n&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">sqrt_x</span><span class="p">);</span>
 
-<span class="w">            </span><span class="cm">/*  Apply Heron&#39;s method to get a better approximation.           */</span>
-<span class="w">            </span><span class="n">approximate_root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">approximate_root</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="o">/</span><span class="n">approximate_root</span><span class="p">);</span>
-<span class="w">        </span><span class="p">}</span>
-
-<span class="w">        </span><span class="cm">/*  As long as x is positive and not very large, we should have a     *</span>
-<span class="cm">         *  very good approximation for sqrt(x). Heron&#39;s method will still    *</span>
-<span class="cm">         *  work for very large x, but we must increase the value of          *</span>
-<span class="cm">         *  maximum_number_of_iterations.                                     */</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">approximate_root</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="cm">/*  End of sqrt.                                                          */</span>
-<span class="k">@end</span>
-<span class="cm">/*  End of Heron definition.                                                  */</span>
-
-<span class="cm">/*  Main routine used for testing our implementation of Heron&#39;s method.       */</span>
-<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="cm">/*  The input to Heron&#39;s method, the value we want to compute the square  *</span>
-<span class="cm">     *  root of.                                                              */</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="p">;</span>
-
-<span class="w">    </span><span class="cm">/*  Calculate the square root and print it to the screen. If we have      *</span>
-<span class="cm">     *  written things correctly, we should get 1.414..., which is sqrt(2).   */</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">sqrt_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">Heron</span><span class="w"> </span><span class="n">sqrt</span><span class="o">:</span><span class="w"> </span><span class="n">x</span><span class="p">];</span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sqrt(%.1f) = %.16f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">sqrt_x</span><span class="p">);</span>
-
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="cm">/*  We can run this by installing GCC, which contains an Objective-C          *</span>
-<span class="cm"> *  compiler, and GNUstep, which provides the Foundation framework:           *</span>
-<span class="cm"> *      https://www.gnustep.org/                                              *</span>
-<span class="cm"> *  Once installed, type:                                                     *</span>
-<span class="cm"> *      gcc `gnustep-config --objc-flags` herons_method.objc.m -o main \      *</span>
-<span class="cm"> *          `gnustep-config --objc-libs` `gnustep-config --base-libs`         *</span>
-<span class="cm"> *      ./main                                                                *</span>
-<span class="cm"> *  This will output the following:                                           *</span>
-<span class="cm"> *      sqrt(2.0) = 1.4142135623730949                                        *</span>
-<span class="cm"> *  This has a relative error of 1.570092458683775E-16.                       *</span>
-<span class="cm"> *                                                                            *</span>
-<span class="cm"> *  On Windows this is a bit more complicated. Setup MSYS2 and MinGW-w64:     *</span>
-<span class="cm"> *      https://www.msys2.org/                                                *</span>
-<span class="cm"> *      https://www.mingw-w64.org/getting-started/msys2/                      *</span>
-<span class="cm"> *  Then follow the steps to install GCC and GNUstep:                         *</span>
-<span class="cm"> *      https://mediawiki.gnustep.org/index.php/Installation_MSYS2            *</span>
-<span class="cm"> *  Once installed, make sure the GNUstep Tools directory is in your DLL path *</span>
-<span class="cm"> *  and then type:                                                            *</span>
-<span class="cm"> *      gcc -IC:\msys64\mingw64\Local\Library\Headers   ^                     *</span>
-<span class="cm"> *          -LC:\msys64\mingw64\Local\Library\Libraries ^                     *</span>
-<span class="cm"> *          herons_method.objc.m -o main.exe -lobjc -lgnustep-base            *</span>
-<span class="cm"> *      main.exe                                                              *</span>
-<span class="cm"> *  This will produce the same result. Windows users can also try using the   *</span>
-<span class="cm"> *  GNUstep Windows MSVC Toolschain:                                          *</span>
-<span class="cm"> *      https://github.com/gnustep/tools-windows-msvc                         *</span>
-<span class="cm"> *  Once installed you can compile Objective-C code from the command line.    */</span>
+<span class="c">% We can run this using GNU Octave, a free and open source</span>
+<span class="c">% alternative to MATLAB:</span>
+<span class="c">%   https://octave.org/download</span>
+<span class="c">% Once installed, type:</span>
+<span class="c">%   octave herons_method.matlab.m</span>
+<span class="c">% This outputs:</span>
+<span class="c">%   sqrt(2.0) = 1.4142135623730949</span>
+<span class="c">% This has a relative error of 1.570092458683775E-16.</span>
 </pre></div>

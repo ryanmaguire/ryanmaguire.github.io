@@ -27,101 +27,27 @@
 <span class="cm">/*  stdio.h provides the &quot;printf&quot; function, used for printing text.           */</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 
-<span class="cm">/*  C89 does not provide complex numbers, but we can define them.             */</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">real</span><span class="p">,</span><span class="w"> </span><span class="n">imag</span><span class="p">;</span>
-<span class="p">};</span>
+<span class="cm">/*  Complex numbers provided here (C99 compatible compiler required).         */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;complex.h&gt;</span>
 
 <span class="cm">/*  Print a complex number in standard form, x + y*i.                         */</span>
-<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">print_complex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">print_complex</span><span class="p">(</span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="cm">/*  We can use printf with the correct format specifiers to do the job.   */</span>
-<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%.16E + %.16E*i</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="cm">/*  Non-zero complex numbers always have a reciprocal.                        */</span>
-<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">make_reciprocal</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="cm">/*  The formula for the reciprocal is given by:                           *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *        1       x - iy                                                  *</span>
-<span class="cm">     *      ------ = -------                                                  *</span>
-<span class="cm">     *      x + iy    2    2                                                  *</span>
-<span class="cm">     *               x  + y                                                   *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *  The denominator is the square or the norm of z. Compute this.         */</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">norm_squared</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="o">*</span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="o">*</span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="p">;</span>
-
-<span class="w">    </span><span class="cm">/*  It is faster to multiply than it is to divide. Compute the reciprocal *</span>
-<span class="cm">     *  of the previous expression and store it as a variable.                */</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">rcpr_norm_squared</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">norm_squared</span><span class="p">;</span>
-
-<span class="w">    </span><span class="cm">/*  The reciprocal can be computing by scaling the components of z.       */</span>
-<span class="w">    </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">rcpr_norm_squared</span><span class="p">;</span>
-<span class="w">    </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="o">-</span><span class="n">rcpr_norm_squared</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="cm">/*  Computes the square of a complex number: w = z*z.                         */</span>
-<span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">square_self</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">z</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="cm">/*  Complex multiplication is performed using elementary arithmetic and   *</span>
-<span class="cm">     *  the simplification i^2 = -1. Given z = x + iy, we have:               *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *       2                                                                *</span>
-<span class="cm">     *      z  = (x + iy) * (x + iy)                                          *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *            2                2 2                                        *</span>
-<span class="cm">     *         = x  + ixy + iyx + i y                                         *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *            2    2                                                      *</span>
-<span class="cm">     *         = x  - y  + 2ixy                                               *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *  The real part is x^2 - y^2, the imaginary part is 2xy. To avoid       *</span>
-<span class="cm">     *  overwriting the data, we must first save the real component as a new  *</span>
-<span class="cm">     *  variable. That is, if we naively do:                                  *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *      z-&gt;real = z-&gt;real*z-&gt;real - z-&gt;imag*z-&gt;imag;                      *</span>
-<span class="cm">     *      z-&gt;imag = 2.0 * z-&gt;real * z-&gt;imag;                                *</span>
-<span class="cm">     *                                                                        *</span>
-<span class="cm">     *  Then z-&gt;imag will have the wrong value! This is because we changed    *</span>
-<span class="cm">     *  z-&gt;real first, and then used the incorrect real part for the          *</span>
-<span class="cm">     *  computation of the imaginary part. Save z-&gt;real as a new variable to  *</span>
-<span class="cm">     *  prevent this.                                                         */</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z_real</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="p">;</span>
-
-<span class="w">    </span><span class="cm">/*  We can now safely update our complex number to its square.            */</span>
-<span class="w">    </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="o">*</span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="o">*</span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="p">;</span>
-<span class="w">    </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">z_real</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="cm">/*  Computes the product of two complex numbers, storing the result in the    *</span>
-<span class="cm"> *  first variable. This acts as the *= operator for complex numbers.         */</span>
-<span class="k">static</span><span class="w"> </span><span class="kt">void</span>
-<span class="nf">multiply_by</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">z</span><span class="p">,</span>
-<span class="w">            </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="cm">/*  Similar to the square_self function, save the real parts of z and w   *</span>
-<span class="cm">     *  as new variables to avoid overwriting and messing up the computation. */</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z_real</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="p">;</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">w_real</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span><span class="o">-&gt;</span><span class="n">real</span><span class="p">;</span>
-
-<span class="w">    </span><span class="cm">/*  To multiply, use (a + ib)*(c + id) = (ac - bd) + i(ad + bc).          */</span>
-<span class="w">    </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">real</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z_real</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w_real</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="o">-&gt;</span><span class="n">imag</span><span class="p">;</span>
-<span class="w">    </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z_real</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="o">-&gt;</span><span class="n">imag</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">z</span><span class="o">-&gt;</span><span class="n">imag</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w_real</span><span class="p">;</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%.16E + %.16E*i</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">creal</span><span class="p">(</span><span class="n">z</span><span class="p">),</span><span class="w"> </span><span class="n">cimag</span><span class="p">(</span><span class="n">z</span><span class="p">));</span>
 <span class="p">}</span>
 
 <span class="cm">/*  Computes powers of a given complex number by repeatedly squaring.         */</span>
-<span class="k">static</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span>
-<span class="n">exp_by_squaring</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="k">static</span><span class="w"> </span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">exp_by_squaring</span><span class="p">(</span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="cm">/*  We start off with out = z, and then apply out = out^2 repeatedly.     */</span>
-<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">z</span><span class="p">;</span>
+<span class="w">    </span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z</span><span class="p">;</span>
 
 <span class="w">    </span><span class="cm">/*  The scale factor is used to handle odd powers. That is, if we have    *</span>
 <span class="cm">     *  z^(2n+1), we can write this as z^(2n) * z = (z^2)^n * z. The scale    *</span>
 <span class="cm">     *  factor will pick up the solo &quot;z&quot; term, and the squaring part handles  *</span>
 <span class="cm">     *  (z^2)^n. Create a variable for this and initialize it to 1.           */</span>
-<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">};</span>
+<span class="w">    </span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
 
 <span class="w">    </span><span class="cm">/*  Special case. If n = 0, then z^0 = 1, by definition. Return 1.        */</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
@@ -130,7 +56,7 @@
 <span class="w">    </span><span class="cm">/*  For negative powers use z^n = (1 / z)^(-n) to reduce n to positive.   */</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="n">make_reciprocal</span><span class="p">(</span><span class="o">&amp;</span><span class="n">output</span><span class="p">);</span>
+<span class="w">        </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">output</span><span class="p">;</span>
 <span class="w">        </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">n</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 
@@ -153,27 +79,26 @@
 <span class="cm">         *  is inside of the parentheses.                                     */</span>
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">n</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
 <span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="n">multiply_by</span><span class="p">(</span><span class="o">&amp;</span><span class="n">scale</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">output</span><span class="p">);</span>
+<span class="w">            </span><span class="n">scale</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">output</span><span class="p">;</span>
 <span class="w">            </span><span class="o">--</span><span class="n">n</span><span class="p">;</span>
 <span class="w">        </span><span class="p">}</span>
 
 <span class="w">        </span><span class="cm">/*  n is now even. Square the output and divide n by two.             */</span>
-<span class="w">        </span><span class="n">square_self</span><span class="p">(</span><span class="o">&amp;</span><span class="n">output</span><span class="p">);</span>
+<span class="w">        </span><span class="n">output</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">output</span><span class="p">;</span>
 <span class="w">        </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;&gt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="cm">/*  n is now 1. The final output is output * scale. Compute this.         */</span>
-<span class="w">    </span><span class="n">multiply_by</span><span class="p">(</span><span class="o">&amp;</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">scale</span><span class="p">);</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">output</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">scale</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="cm">/*  Test our routines by computing 1 / (1 + i)^30.                            */</span>
-<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">power</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-30</span><span class="p">;</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">};</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">complex_number</span><span class="w"> </span><span class="n">z_pow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exp_by_squaring</span><span class="p">(</span><span class="o">&amp;</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">power</span><span class="p">);</span>
-<span class="w">    </span><span class="n">print_complex</span><span class="p">(</span><span class="o">&amp;</span><span class="n">z_pow</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="p">)</span><span class="n">I</span><span class="o">*</span><span class="mf">1.0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">complex</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">z_pow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exp_by_squaring</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">power</span><span class="p">);</span>
+<span class="w">    </span><span class="n">print_complex</span><span class="p">(</span><span class="n">z_pow</span><span class="p">);</span>
 
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>

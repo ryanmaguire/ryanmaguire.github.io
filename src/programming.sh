@@ -24,7 +24,6 @@ getLanguageName() {
   esac
 }
 
-
 dir="programming"
 mainFile="$dir/$dir.markdown"
 source="../../3rdparty/mitx_mathematics_programming_examples"
@@ -134,8 +133,8 @@ for sub in $sortedSubDirs; do
             echo "[**Back**](../)" >> "$subSubSubFile"
             echo "" >> "$subSubSubFile"
 
-            for file in $(find $subSubSub -type f); do
-                if [[ "$file" == "*objc.m*" ]]; then
+            for file in $(find $subSubSub -type f | sort); do
+                if [[ "$file" == *objc.m* ]]; then
                     extension="objc.m"
                 elif [[ "$file" == "*matlab.m*" ]]; then
                     extension="matlab.m"
