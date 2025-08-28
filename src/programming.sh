@@ -136,7 +136,7 @@ for sub in $sortedSubDirs; do
             for file in $(find $subSubSub -type f | sort); do
                 if [[ "$file" == *objc.m* ]]; then
                     extension="objc.m"
-                elif [[ "$file" == "*matlab.m*" ]]; then
+                elif [[ "$file" == *matlab.m* ]]; then
                     extension="matlab.m"
                 else
                     extension="${file##*.}"
