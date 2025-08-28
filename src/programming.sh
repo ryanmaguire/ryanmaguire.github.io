@@ -144,7 +144,14 @@ for sub in $sortedSubDirs; do
                 header="$(getLanguageName "$extension")"
                 sourceFile="${subSubSubFile/markdown/$extension.html}"
                 touch "$sourceFile"
-                pygmentize -o "$sourceFile" "$file"
+
+                if [ "$extension" == "idl" ]; then
+                    pygmentize -l idl -o "$sourceFile" "$file"
+                elif [ "$extension" == "c3" ]; then
+                    pygmentize -l text -o "$sourceFile" "$file"
+                else
+                    pygmentize -o "$sourceFile" "$file"
+                fi
                 echo "## $header<br />" >> "$subSubSubFile"
                 echo "{% include_relative $(basename $sourceFile) %}" >> "$subSubSubFile"
             done
