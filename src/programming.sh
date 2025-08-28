@@ -1,3 +1,30 @@
+getLanguageName() {
+  case "$1" in
+    c) echo "C" ;;
+    c3) echo "C3" ;;
+    cs) echo "C#" ;;
+    cpp) echo "C++" ;;
+    d) echo "D" ;;
+    f90) echo "Fortran" ;;
+    go) echo "Go" ;;
+    java) echo "Java" ;;
+    jl) echo "Julia" ;;
+    js) echo "JavaScript" ;;
+    kt) echo "Kotlin" ;;
+    matlab.m) echo "MATLAB" ;;
+    objc.m) echo "Objective-C" ;;
+    pas) echo "Pascal" ;;
+    pro) echo "IDL" ;;
+    py) echo "Python" ;;
+    r) echo "R" ;;
+    rs) echo "Rust" ;;
+    swift) echo "Swift" ;;
+    ts) echo "TypeScript" ;;
+    *) echo "Unknown" ;;
+  esac
+}
+
+
 dir="programming"
 mainFile="$dir/$dir.markdown"
 source="../../3rdparty/mitx_mathematics_programming_examples"
@@ -20,11 +47,15 @@ mainFile="../$mainFile"
 
 cd "$dir"
 
-for sub in $(find $source -mindepth 1 -maxdepth 1 -type d -not -name '.git'); do
+subDirs="$(find $source -mindepth 1 -maxdepth 1 -type d -not -name '.git')"
+sortedSubDirs="$(echo "$subDirs" | sort)"
+
+for sub in $sortedSubDirs; do
     subName="$(basename $sub)"
     subString="$(echo "$subName" | tr "_" " ")"
     subTitle=""
-    subFile="$subName/$subName.markdown"
+    subDir="$subName"
+    subFile="$subDir/$subName.markdown"
 
     for word in $subString; do
         firstCharacter="$(tr '[:lower:]' '[:upper:]' <<< "${word:0:1}")"
@@ -39,17 +70,21 @@ for sub in $(find $source -mindepth 1 -maxdepth 1 -type d -not -name '.git'); do
 
     echo "---" >> "$subFile"
     echo "layout: default" >> "$subFile"
-    echo "permalink: /programming/$subName/" >> "$subFile"
+    echo "permalink: /programming/$subDir/" >> "$subFile"
     echo "---" >> "$subFile"
     echo "" >> "$subFile"
     echo "[**Back**](../)" >> "$subFile"
     echo "" >> "$subFile"
 
-    for subSub in $(find $sub -mindepth 1 -maxdepth 1 -type d); do
+    subSubDirs="$(find $sub -mindepth 1 -maxdepth 1 -type d)"
+    sortedSubSubDirs="$(echo "$subSubDirs" | sort)"
+
+    for subSub in $sortedSubSubDirs; do
         subSubName="$(basename $subSub)"
         subSubString="$(echo "$subSubName" | tr "_" " ")"
+        subSubDir="$subDir/$subSubName"
+        subSubFile="$subSubDir/$subSubName.markdown"
         subSubTitle=""
-        subSubFile="$subName/$subSubName/$subSubName.markdown"
 
         for word in $subSubString; do
             firstCharacter="$(tr '[:lower:]' '[:upper:]' <<< "${word:0:1}")"
@@ -64,17 +99,21 @@ for sub in $(find $source -mindepth 1 -maxdepth 1 -type d -not -name '.git'); do
 
         echo "---" >> "$subSubFile"
         echo "layout: default" >> "$subSubFile"
-        echo "permalink: /programming/$subName/$subSubName" >> "$subSubFile"
+        echo "permalink: /programming/$subSubDir/" >> "$subSubFile"
         echo "---" >> "$subSubFile"
         echo "" >> "$subSubFile"
         echo "[**Back**](../)" >> "$subSubFile"
         echo "" >> "$subSubFile"
 
-        for subSubSub in $(find $subSub -mindepth 1 -maxdepth 1 -type d); do
+        subSubSubDirs="$(find $subSub -mindepth 1 -maxdepth 1 -type d)"
+        sortedSubSubSubDirs="$(echo "$subSubSubDirs" | sort)"
+
+        for subSubSub in $sortedSubSubSubDirs; do
             subSubSubName="$(basename $subSubSub)"
             subSubSubString="$(echo "$subSubSubName" | tr "_" " ")"
+            subSubSubDir="$subSubDir/$subSubSubName"
+            subSubSubFile="$subSubSubDir/$subSubSubName.markdown"
             subSubSubTitle=""
-            subSubSubFile="$subName/$subSubName/$subSubSubName/$subSubSubName.markdown"
 
             for word in $subSubSubString; do
                 firstCharacter="$(tr '[:lower:]' '[:upper:]' <<< "${word:0:1}")"
@@ -89,18 +128,25 @@ for sub in $(find $source -mindepth 1 -maxdepth 1 -type d -not -name '.git'); do
 
             echo "---" >> "$subSubSubFile"
             echo "layout: default" >> "$subSubSubFile"
-            echo "permalink: /programming/$subName/$subSubName/$subSubSubName" >> "$subSubSubFile"
+            echo "permalink: /programming/$subSubSubDir/" >> "$subSubSubFile"
             echo "---" >> "$subSubSubFile"
             echo "" >> "$subSubSubFile"
             echo "[**Back**](../)" >> "$subSubSubFile"
             echo "" >> "$subSubSubFile"
 
             for file in $(find $subSubSub -type f); do
-                extension="${file##*.}"
+                if [[ "$file" == "*objc.m*" ]]; then
+                    extension="objc.m"
+                elif [[ "$file" == "*matlab.m*" ]]; then
+                    extension="matlab.m"
+                else
+                    extension="${file##*.}"
+                fi
+                header="$(getLanguageName "$extension")"
                 sourceFile="${subSubSubFile/markdown/$extension.html}"
                 touch "$sourceFile"
                 pygmentize -o "$sourceFile" "$file"
-                echo "## ${extension^}<br />" >> "$subSubSubFile"
+                echo "## $header<br />" >> "$subSubSubFile"
                 echo "{% include_relative $(basename $sourceFile) %}" >> "$subSubSubFile"
             done
 

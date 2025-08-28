@@ -9,14 +9,14 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Mathematics, Physics, and Programming" />
 <meta property="og:description" content="Mathematics, Physics, and Programming" />
-<link rel="canonical" href="https://github.com/ryanmaguire/programming/differential_equations/heat_equation/baking_a_cake" />
-<meta property="og:url" content="https://github.com/ryanmaguire/programming/differential_equations/heat_equation/baking_a_cake" />
+<link rel="canonical" href="https://github.com/ryanmaguire/programming/differential_equations/heat_equation/baking_a_cake/" />
+<meta property="og:url" content="https://github.com/ryanmaguire/programming/differential_equations/heat_equation/baking_a_cake/" />
 <meta property="og:site_name" content="Ryan Maguire" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Ryan Maguire" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Mathematics, Physics, and Programming","headline":"Ryan Maguire","url":"https://github.com/ryanmaguire/programming/differential_equations/heat_equation/baking_a_cake"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Mathematics, Physics, and Programming","headline":"Ryan Maguire","url":"https://github.com/ryanmaguire/programming/differential_equations/heat_equation/baking_a_cake/"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://github.com/ryanmaguire/feed.xml" title="Ryan Maguire" /></head>
 <body><header class="site-header" role="banner">
@@ -38,7 +38,151 @@
       <div class="wrapper">
         <p><a href="../"><strong>Back</strong></a></p>
 
-<h2 id="m">M<br /></h2>
+<h2 id="unknown">Unknown<br /></h2>
+<div class="highlight"><pre><span></span><span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%                                   LICENSE                                    %</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%   This file is part of mitx_mathematics_programming_examples.                %</span>
+<span class="c">%                                                                              %</span>
+<span class="c">%   mitx_mathematics_programming_examples is free software: you can            %</span>
+<span class="c">%   redistribute it and/or modify it under the terms of the GNU General Public %</span>
+<span class="c">%   License as published by the Free Software Foundation, either version 3 of  %</span>
+<span class="c">%   the License, or (at your option) any later version.                        %</span>
+<span class="c">%                                                                              %</span>
+<span class="c">%   mitx_mathematics_programming_examples is distributed in the hope that it   %</span>
+<span class="c">%   will be useful, but WITHOUT ANY WARRANTY; without even the implied         %</span>
+<span class="c">%   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  %</span>
+<span class="c">%   GNU General Public License for more details.                               %</span>
+<span class="c">%                                                                              %</span>
+<span class="c">%   You should have received a copy of the GNU General Public License          %</span>
+<span class="c">%   along with mitx_mathematics_programming_examples.  If not, see             %</span>
+<span class="c">%   &lt;https://www.gnu.org/licenses/&gt;.                                           %</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%   Purpose:                                                                   %</span>
+<span class="c">%       Numerical solver for the heat equation applied to baking a cake.       %</span>
+<span class="c">%   Notes:                                                                     %</span>
+<span class="c">%       This is an adaptation of the original MATLAB code written by the MITx  %</span>
+<span class="c">%       team some years ago. I have re-written everything so that it works on  %</span>
+<span class="c">%       GNU Octave, so users need not rely on MATLAB.                          %</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%   Author:     Ryan Maguire                                                   %</span>
+<span class="c">%   Date:       Nevember 4, 2024.                                              %</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+<span class="c">% Solve heat equation using forward time, centered space scheme.</span>
+<span class="nb">close</span><span class="w"> </span><span class="nb">all</span><span class="p">;</span>
+<span class="nb">clearvars</span><span class="p">;</span>
+
+<span class="c">% Parameters for the spatial grid.</span>
+<span class="n">length_of_cake</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>
+<span class="n">number_of_steps</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+
+<span class="c">% Time step used in the numerical solver.</span>
+<span class="n">dt</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.06</span><span class="p">;</span>
+
+<span class="c">% Time parameter for the simulation.</span>
+<span class="n">max_time</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">60.0</span><span class="p">;</span>
+
+<span class="c">% Create an array for the time axis.</span>
+<span class="nb">time</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">:</span><span class="n">dt</span><span class="p">:</span><span class="n">max_time</span><span class="p">;</span>
+
+<span class="c">% And create an array for the spacial component.</span>
+<span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">length_of_cake</span><span class="p">,</span><span class="w"> </span><span class="n">number_of_steps</span><span class="p">);</span>
+
+<span class="c">% Displacement. This is the length of the cake divided by the number of steps.</span>
+<span class="n">dx</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="c">% Pre-compute the scale factors to save on redundant calculations.</span>
+<span class="n">dx_sq</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">dx</span><span class="o">*</span><span class="n">dx</span><span class="p">;</span>
+<span class="n">two_dx_sq</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dx_sq</span><span class="p">;</span>
+
+<span class="c">% Initial condition.</span>
+<span class="n">initial_conditions</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">@(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span>
+
+<span class="c">% Parameters for the time and spatial components of the for-loops below.</span>
+<span class="n">number_of_time_steps</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">length</span><span class="p">(</span><span class="nb">time</span><span class="p">);</span>
+<span class="n">number_of_spatial_steps</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">number_of_steps</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="c">% Set the initial conditions for the cake.</span>
+<span class="n">u</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">initial_conditions</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="n">u</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">200</span><span class="p">;</span>
+<span class="n">u</span><span class="p">(</span><span class="k">end</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">u</span><span class="p">(</span><span class="k">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="c">% Conductivity.</span>
+<span class="n">k</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">@(</span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="p">((</span><span class="mf">0.19</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.31</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">erf</span><span class="p">(</span><span class="n">u</span><span class="o">-</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mf">0.31</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.19</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.19</span><span class="p">;</span>
+
+<span class="c">% Capacity.</span>
+<span class="n">c</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">@(</span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="p">((</span><span class="mf">2200.0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">2800.0</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">erf</span><span class="p">(</span><span class="n">u</span><span class="o">-</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mf">2800.0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">2200.0</span><span class="p">)</span><span class="o">*</span><span class="mf">0.52</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2200.0</span><span class="p">;</span>
+
+<span class="c">% Loop through both the time and spatial compents and numerically solve.</span>
+<span class="k">for</span><span class="w"> </span><span class="nb">i</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span><span class="n">number_of_time_steps</span>
+
+<span class="w">    </span><span class="c">% Impose left boundary condition.</span>
+<span class="w">    </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">200</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nb">j</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span><span class="n">number_of_spatial_steps</span>
+
+<span class="w">        </span><span class="c">% Find solution at next time step.</span>
+<span class="w">        </span><span class="n">denom</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">two_dx_sq</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">(</span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="p">,</span><span class="w"> </span><span class="nb">j</span><span class="p">));</span>
+<span class="w">        </span><span class="nb">factor</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">denom</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c">% Centered spatial component, numerical solver. We have, for the</span>
+<span class="w">        </span><span class="c">% heat equation, the following setup:</span>
+<span class="w">        </span><span class="c">%   u_xx = u_t</span>
+<span class="w">        </span><span class="c">% Applying an Euler-like numerical solver, we get:</span>
+<span class="w">        </span><span class="c">%   u(i+1, j) = dt u_xx(i, j)</span>
+<span class="w">        </span><span class="c">% We numerically compute u_xx using the centered difference calculation.</span>
+<span class="w">        </span><span class="c">% We need u(i, j), u(i, j-1), and u(i, j+1) for this. Compute.</span>
+<span class="w">        </span><span class="n">u_j_plus_1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="p">,</span><span class="w"> </span><span class="nb">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">        </span><span class="n">u_j</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="p">,</span><span class="w"> </span><span class="nb">j</span><span class="p">);</span>
+<span class="w">        </span><span class="n">u_j_minus_1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="p">,</span><span class="w"> </span><span class="nb">j</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c">% Compute the sums from the centered difference scheme.</span>
+<span class="w">        </span><span class="n">right_sum</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">u_j_plus_1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">u_j</span><span class="p">;</span>
+<span class="w">        </span><span class="n">left_sum</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">u_j_minus_1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">u_j</span><span class="p">;</span>
+<span class="w">        </span><span class="n">right</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">k</span><span class="p">(</span><span class="n">right_sum</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">u_j_plus_1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">left</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">k</span><span class="p">(</span><span class="n">left_sum</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">u_j_minus_1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">center</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="p">(</span><span class="n">u_j_plus_1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">k</span><span class="p">(</span><span class="n">u_j</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">k</span><span class="p">(</span><span class="n">u_j_minus_1</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">u_j</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c">% Numerically calculate the next step.</span>
+<span class="w">        </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nb">j</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="p">,</span><span class="w"> </span><span class="nb">j</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">factor</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">right</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">left</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">center</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">end</span>
+
+<span class="w">    </span><span class="c">% Impose right boundary condition.</span>
+<span class="w">    </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">end</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c">% Create the animation</span>
+<span class="w">    </span><span class="c">% First time through the main loop, create the plot</span>
+<span class="w">    </span><span class="c">% Subsequent times, update YData and title</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nb">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">        </span><span class="c">% Plot solution.</span>
+<span class="w">        </span><span class="n">p</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="p">,</span><span class="w"> </span><span class="p">:),</span><span class="w"> </span><span class="s">&#39;linewidth&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="w">        </span><span class="nb">xlabel</span><span class="p">(</span><span class="s">&#39;$x$&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;interpreter&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;latex&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="nb">ylabel</span><span class="p">(</span><span class="s">&#39;$u$&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;interpreter&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;latex&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="nb">ylim</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">]);</span>
+<span class="w">    </span><span class="k">else</span>
+
+<span class="w">        </span><span class="c">% Update the plot.</span>
+<span class="w">        </span><span class="nb">set</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;YData&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">(</span><span class="nb">i</span><span class="p">,</span><span class="w"> </span><span class="p">:));</span>
+<span class="w">    </span><span class="k">end</span>
+
+<span class="w">    </span><span class="nb">title</span><span class="p">([</span><span class="s">&#39;t = &#39;</span><span class="p">,</span><span class="w"> </span><span class="nb">num2str</span><span class="p">(</span><span class="nb">time</span><span class="p">(</span><span class="nb">i</span><span class="p">),</span><span class="w"> </span><span class="s">&#39;%.3f&#39;</span><span class="p">)],</span><span class="w"> </span><span class="s">&#39;interpreter&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;latex&#39;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nb">drawnow</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<hr />
+<p>layout: default
+permalink: /programming/differential_equations/heat_equation/baking_a_cake/
+—</p>
+
+<p><a href="../"><strong>Back</strong></a></p>
+
+<h2 id="unknown-1">Unknown<br /></h2>
 <div class="highlight"><pre><span></span><span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 <span class="c">%                                   LICENSE                                    %</span>
 <span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
