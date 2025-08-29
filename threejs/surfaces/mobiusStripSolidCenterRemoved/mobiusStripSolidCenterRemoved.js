@@ -15,7 +15,7 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders a Mobius strip with a normal vector moving along it.          *
+ *      Renders a Mobius strip with the center cut out.                       *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
  *  Date:       July 27, 2025                                                 *
@@ -28,7 +28,7 @@ import * as three from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 /*  Globals for the animation.                                                */
-let camera, scene, renderer, startTime, object, dir, arrow;
+let camera, scene, renderer, startTime, object;
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -61,21 +61,9 @@ function animate() {
     /*  The elapsed time is used for the rotation parameter.                  */
     const currentTime = Date.now();
     const time = (currentTime - startTime);
-    const t = time / 1024.0;
 
-    const cos_t = Math.cos(t);
-    const sin_t = Math.sin(t);
-    const cos_half_t = Math.cos(0.5 * t);
-    const sin_half_t = Math.sin(0.5 * t);
-
-    arrow.position.x = cos_t;
-    arrow.position.y = sin_t;
-
-    dir.x = cos_t * sin_half_t;
-    dir.y = sin_t * sin_half_t;
-    dir.z = -cos_half_t
-    dir.normalize();
-    arrow.setDirection(dir);
+    /*  Rotate the object slightly as time passes.                            */
+    object.rotation.z = time / 8192.0;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -135,7 +123,7 @@ function setupCamera() {
 
     /*  Create the camera and set its initial position.                       */
     camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 16);
-    camera.position.set(2.0, -5.0, -5.0);
+    camera.position.set(0.0, -5.0, 6.0);
 }
 
 /******************************************************************************
@@ -153,8 +141,6 @@ function setupScene() {
 
     /*  Lighting for the scene.                                               */
     const mainLight = new three.DirectionalLight(0xFFFFFF, 1.0);
-
-    const base = new three.Vector3(1.0, 0.0, 0.0);
 
     /*  three.js has parametric function tools, but this renders the          *
      *  with diagonals across the constituents squares, creating a mesh of    *
@@ -180,7 +166,8 @@ function setupScene() {
 
     /*  The number of segments we'll divide the two axes into.                */
     const WIDTH = 64;
-    const HEIGHT = 16;
+    const HEIGHT = 17;
+    const HALF_HEIGHT = 8;
 
     /*  Parameters for the uv plane, the strip in the plane that parametrizes *
      *  the Mobius band.                                                      */
@@ -283,6 +270,9 @@ function setupScene() {
             /*  Lastly, the point above and to the right.                     */
             const INDEX11 = INDEX10 + 1;
 
+            if ((yIndex == HALF_HEIGHT) || (yIndex == HALF_HEIGHT - 1))
+                continue;
+
             /*  Add the constituent triangles that make up the current square.*/
             indices.push(INDEX00, INDEX01, INDEX10, INDEX10, INDEX01, INDEX11);
         }
@@ -295,20 +285,13 @@ function setupScene() {
     geometry.setIndex(indices);
     geometry.computeVertexNormals();
 
-    dir = new three.Vector3(0.0, 0.0, -1.0);
-    arrow = new three.ArrowHelper(dir, base, 0.5, 0x000000, 0.125, 0.0625);
-
-    console.log(arrow.line.material.linewidth);
-
     /*  We wish to create a wireframe for the object. Create the lines.       */
     object = new three.Mesh(geometry, material);
     object.castShadow = true;
 
     /*  Create the scene and add the Mobius strip to it.                      */
     scene = new three.Scene();
-    scene.background = new three.Color(0xCCCCCC);
     scene.add(object);
-    scene.add(arrow);
     scene.add(mainLight);
 }
 /*  End of setupScene.                                                        */
