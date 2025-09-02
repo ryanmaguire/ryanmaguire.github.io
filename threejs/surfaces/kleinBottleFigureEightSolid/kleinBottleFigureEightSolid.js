@@ -15,10 +15,10 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Renders an elliptic paraboloid, z = x^2 + 2y^2.                       *
+ *      Renders a Figure-Eight Klein bottle made out of two Mobius strips.    *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       July 22, 2025                                                 *
+ *  Date:       August 30, 2025                                               *
  ******************************************************************************/
 
 /*  three.js has all of the tools for generating 3D animations.               */
@@ -28,7 +28,7 @@ import * as three from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 
 /*  Globals for the animation.                                                */
-let camera, scene, renderer, startTime, object;
+let camera, scene, renderer, startTime, objectA, objectB;
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -50,7 +50,7 @@ function onWindowResize() {
  *  Function:                                                                 *
  *      animate                                                               *
  *  Purpose:                                                                  *
- *      Rotates the elliptic paraboloid slowly about the z axis.              *
+ *      Rotates the Mobius strip slowly about the z axis.                     *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *
@@ -59,11 +59,13 @@ function onWindowResize() {
 function animate() {
 
     /*  The elapsed time is used for the rotation parameter.                  */
-    const CURRENT_TIME = Date.now();
-    const TIME = (CURRENT_TIME - startTime);
+    const currentTime = Date.now();
+    const time = (currentTime - startTime) / 4096.0;
+    const T = 2.0 * (1.0 - Math.sin(time));
 
     /*  Rotate the object slightly as time passes.                            */
-    object.rotation.z = TIME / 8192.0;
+    objectA.position.z = T;
+    objectB.position.z = -T;
 
     /*  Re-render the newly rotated scene.                                    */
     renderer.render(scene, camera);
@@ -83,9 +85,9 @@ function createControls() {
 
     /*  These controls allow the user to interact with the image using the    *
      *  mouse. Clicking and dragging will rearrange the image.                */
-    const CONTROLS = new OrbitControls(camera, renderer.domElement);
-    CONTROLS.target.set(0, 1, 0);
-    CONTROLS.update();
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1, 0);
+    controls.update();
 }
 
 /******************************************************************************
@@ -118,31 +120,19 @@ function setupRenderer() {
  ******************************************************************************/
 function setupCamera() {
 
-    /*  Starting location for the camera.                                     */
-    const CAMERA_X = 0.0;
-    const CAMERA_Y = -5.0;
-    const CAMERA_Z = 6.0;
-
-    /*  Field-of-View for the camera.                                         */
-    const FOV = 36.0;
-
-    /*  Drawing thresholds for objects in the camera's view.                  */
-    const NEAR = 0.25;
-    const FAR = 100.0;
-
     /*  Aspect ratio for the window.                                          */
-    const WINDOW_RATIO = window.innerWidth / window.innerHeight;
+    const windowRatio = window.innerWidth / window.innerHeight;
 
     /*  Create the camera and set its initial position.                       */
-    camera = new three.PerspectiveCamera(FOV, WINDOW_RATIO, NEAR, FAR);
-    camera.position.set(CAMERA_X, CAMERA_Y, CAMERA_Z);
+    camera = new three.PerspectiveCamera(36, windowRatio, 0.25, 100);
+    camera.position.set(0.0, -10.0, 10.0);
 }
 
 /******************************************************************************
  *  Function:                                                                 *
  *      setupScene                                                            *
  *  Purpose:                                                                  *
- *      Creates the scene, which is a wireframe elliptic paraboloid and a     *
+ *      Creates the scene, which is a wireframe Mobius strip and a            *
  *      black background.                                                     *
  *  Arguments:                                                                *
  *      None.                                                                 *
@@ -151,138 +141,179 @@ function setupCamera() {
  ******************************************************************************/
 function setupScene() {
 
-    /*  three.js has parametric function tools, but this renders the object   *
-     *  with diagonals across the constituent squares, creating a mesh of     *
+    /*  Lighting for the scene.                                               */
+    const mainLight = new three.DirectionalLight(0xFFFFFF, 1.0);
+
+    /*  three.js has parametric function tools, but this renders the          *
+     *  with diagonals across the constituents squares, creating a mesh of    *
      *  triangles. To see a square pattern, we'll need to make our own buffer.*/
-    const GEOMETRY = new three.BufferGeometry();
+    const geometryA = new three.BufferGeometry();
+    const geometryB = new three.BufferGeometry();
 
     /*  The vertices for the object will by typed as 32-bit floats. We'll     *
      *  need a variable for the buffer attributes as well.                    */
-    let f32Vertices, geometryAttributes;
+    let f32VerticesA, f32VerticesB;
+    let geometryAttributesA, geometryAttributesB;
 
     /*  Material the wireframe will be made out of.                           */
-    const MATERIAL = new three.MeshBasicMaterial({color: 0x00AAFF});
+    const materialParameters = {side: three.DoubleSide};
+    const material = new three.MeshNormalMaterial(materialParameters);
 
-    /*  Parameters for the elliptic paraboloid.                               */
-    const START = -1.0;
-    const FINISH = 1.0;
-    const LENGTH = FINISH - START;
+    /*  Parameters for the Mobius strip. The horizontal axis is parametrized  *
+     *  by the angle on the unit circle, which varies from 0 to 2 pi.         */
+    const X_START = 0.0;
+    const X_FINISH = 2.0 * Math.PI;
 
-    /*  The number of samples in the horizontal and vertical axes.            */
-    const WIDTH = 32;
-    const HEIGHT = 32;
+    /*  Vertical axis is the height of the strip of paper, -1 to 1.           */
+    const Y_START = 0.5 * Math.PI;
+    const Y_FINISH = Math.PI + Y_START;
 
-    /*  Step-sizes for the displacement between samples.                      */
-    const DX = LENGTH / (WIDTH - 1);
-    const DY = LENGTH / (HEIGHT - 1);
+    /*  The number of segments we'll divide the two axes into.                */
+    const WIDTH = 65;
+    const HEIGHT = 65;
 
-    /*  Vertices for the mesh used to draw the elliptic paraboloid.           */
-    let vertices = [];
+    /*  Parameters for the uv plane, the strip in the plane that parametrizes *
+     *  the Mobius band.                                                      */
+    const X_LENGTH = X_FINISH - X_START;
+    const Y_LENGTH = Y_FINISH - Y_START;
+    const DX = X_LENGTH / (WIDTH - 1);
+    const DY = Y_LENGTH / (HEIGHT - 1);
+
+    const R = 2.0;
+
+    /*  Vertices for the mesh used to draw the Mobius strip.                  */
+    let verticesA = [];
+    let verticesB = [];
     let indices = [];
 
     /*  Variables for indexing over the two axes.                             */
     let xIndex, yIndex;
 
-    /*  Loop through the vertical axis. The elliptic paraboloid lies          *
-     *  above the xy plane, meaning it is of the form z = f(x, y).            *
-     *                                                                        *
-     *  Note, since the y index is the outer for-loop, the array is indexed   *
-     *  in row-major fashion. That is, index = y * WIDTH + x.                 */
-    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+    /*  Loop through the horizontal axis.                                     */
+    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
 
-        /*  Convert pixel index to y coordinate.                              */
-        const Y = START + yIndex * DY;
+        /*  Convert pixel index to x coordinate in the plane.                 */
+        const X = X_START + xIndex * DX;
+        const COS_X = Math.cos(X);
+        const SIN_X = Math.sin(X);
 
-        /*  Loop through the horizontal component of the object.              */
-        for (xIndex = 0; xIndex < WIDTH; ++xIndex) {
+        const COS_HALF_X = Math.cos(0.5 * X);
+        const SIN_HALF_X = Math.sin(0.5 * X);
 
-            /*  Convert pixel index to x coordinate in the plane.             */
-            const X = START + xIndex * DX;
+        const X_COS_SCALE = 0.5 * COS_HALF_X;
+        const X_SIN_SCALE = 0.5 * SIN_HALF_X;
 
-            /*  The elliptic paraboloid has a simple formula: z = x^2 + 2y^2. */
-            const Z = X*X + 2.0*Y*Y;
+        /*  Loop through the vertical component of the object.                */
+        for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+
+            /*  Convert pixel index to y coordinate.                          */
+            const Y = Y_START + yIndex * DY;
+            const SIN_Y = Math.sin(Y);
+            const SIN_TWO_Y = Math.sin(2.0 * Y);
+
+            const SCALE_A = R + COS_HALF_X * SIN_Y - X_SIN_SCALE * SIN_TWO_Y;
+            const SCALE_B = R - COS_HALF_X * SIN_Y - X_SIN_SCALE * SIN_TWO_Y;
+
+            const XA_PT = COS_X * SCALE_A;
+            const YA_PT = SIN_X * SCALE_A;
+            const ZA_PT = SIN_HALF_X * SIN_Y + X_COS_SCALE * SIN_TWO_Y;
+
+            const XB_PT = COS_X * SCALE_B;
+            const YB_PT = SIN_X * SCALE_B;
+            const ZB_PT = -SIN_HALF_X * SIN_Y + X_COS_SCALE * SIN_TWO_Y;
 
             /*  Add this point to our vertex array.                           */
-            vertices.push(X, Y, Z);
+            verticesA.push(XA_PT, YA_PT, ZA_PT);
+            verticesB.push(XB_PT, YB_PT, ZB_PT);
         }
-        /*  End of horizontal for-loop.                                       */
+        /*  End of vertical for-loop.                                         */
     }
-    /*  End of vertical for-loop.                                             */
+    /*  End of horizontal for-loop.                                           */
+
+    /*  The Mobius band has a half twist, so the "orientation" of the strip   *
+     *  is reverse after x varies from 0 to 2 pi (left becomes right and      *
+     *  right becomes left). We cannot simply connect a line segment from the *
+     *  (WIDTH - 1, y) point to the (0, y) point, these points do not line up *
+     *  because of the flip. Instead we need to connect the (WIDTH - 1, y)    *
+     *  point to the (0, HEIGHT - 1 - y) point, the HEIGHT - 1 - y index      *
+     *  takes into account the flip. Add these to our vertex array.           */
+    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+
+        /*  Replacing y with HEIGHT - 1 - y flips the horizontal axis. There  *
+         *  are three components to a point, since we are working in three    *
+         *  dimensional space, so the index is scaled by 3.                   */
+        const X_IND = 3 * (HEIGHT - yIndex - 1);
+        const Y_IND = X_IND + 1;
+        const Z_IND = Y_IND + 1;
+
+        /*  No need to recompute these points, they correspond to the first   *
+         *  column in the vertex array. Add them to the end as well.          */
+        verticesA.push(verticesA[X_IND], verticesA[Y_IND], verticesA[Z_IND]);
+        verticesB.push(verticesB[X_IND], verticesB[Y_IND], verticesB[Z_IND]);
+    }
 
     /*  The BufferAttribute constructor wants a typed array, convert the      *
      *  vertex array into a 32-bit float array.                               */
-    f32Vertices = new Float32Array(vertices);
+    f32VerticesA = new Float32Array(verticesA);
+    f32VerticesB = new Float32Array(verticesB);
 
     /*  We can now create the buffer attributes. The data is 3D, hence the    *
      *  itemSize parameter is 3.                                              */
-    geometryAttributes = new three.BufferAttribute(f32Vertices, 3);
+    geometryAttributesA = new three.BufferAttribute(f32VerticesA, 3);
+    geometryAttributesB = new three.BufferAttribute(f32VerticesB, 3);
 
     /*  We need to create the lines now. We do this by creating ordered       *
      *  pairs of the indices for the vertices in the vertex array that we     *
      *  want to connect. Each point will be connected to its four surrounding *
      *  neighbors, except for the points on the boundary, which have fewer    *
      *  neighbors. We handle these boundary points separately.                */
-    for (yIndex = 0; yIndex < HEIGHT; ++yIndex) {
+    for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
 
-        /*  The indices are row-major, meaning index = y * WIDTH + x. The     *
-         *  shift factor only depends on the y-component, compute this.       */
-        const SHIFT = yIndex * WIDTH;
+        /*  The horizontal component is now fixed, loop through the vertical. */
+        for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex) {
 
-        /*  The vertical component is now fixed, loop through the horizontal  *
-         *  axis. The right-most column, which is xIndex = WIDTH - 1, is the  *
-         *  boundary and must be handled separately. This is done later.      */
-        for (xIndex = 0; xIndex < WIDTH - 1; ++xIndex) {
+            /*  We operate in row-major fashion, so the starting index for    *
+             *  this row is the current horizontal index times the height.    */
+            const SHIFT = xIndex * HEIGHT;
 
-            /*  The current index is the shift plus horizontal index. That    *
-             *  is, the index for (x, y) is y * WIDTH + x.                    */
-            const INDEX00 = SHIFT + xIndex;
+            /*  The current index is the shift plus vertical index. That      *
+             *  is, the index for (x, y) is x*height + y.                     */
+            const INDEX00 = SHIFT + yIndex;
 
-            /*  The point directly after the current point, in the horizontal.*/
+            /*  The point directly after the current point, in the vertical.  */
             const INDEX01 = INDEX00 + 1;
 
-            /*  The point directly above the current point, in the vertical.  */
-            const INDEX10 = INDEX00 + WIDTH;
+            /*  The point next to the current point, in the horizontal.       */
+            const INDEX10 = INDEX00 + HEIGHT;
 
-            /*  If we are not at the very top of the object, we can add an    *
-             *  "L" shape to our mesh, connecting the bottom left point       *
-             *  with the bottom right point, and similarly the bottom left    *
-             *  point with the upper left point.                              */
-            if (yIndex != HEIGHT - 1)
-                indices.push(INDEX00, INDEX01, INDEX00, INDEX10);
+            /*  Lastly, the point above and to the right.                     */
+            const INDEX11 = INDEX10 + 1;
 
-            /*  At the top boundary, the upper left point goes beyond the     *
-             *  bounds of our object and does not need to be drawn. Only add  *
-             *  the line from bottom left to bottom right.                    */
-            else
-                indices.push(INDEX00, INDEX01);
+            /*  Add the constituent triangles that make up the current square.*/
+            indices.push(INDEX00, INDEX01, INDEX10, INDEX10, INDEX01, INDEX11);
         }
-        /*  End of horizontal for-loop.                                       */
+        /*  End of vertical for-loop.                                         */
     }
-    /*  End of vertical for-loop.                                             */
-
-    /*  We stopped the horizontal for loop at WIDTH - 2, to avoid writing     *
-     *  past the bounds of the object. This means we have left out the        *
-     *  right-most vertical column, and need to add it back in.               */
-    for (yIndex = 0; yIndex < HEIGHT - 1; ++yIndex)
-    {
-        /*  Same computation above, adding vertical lines only, and with the  *
-         *  x index set to WIDTH - 1, the right-most index.                   */
-        const SHIFT = yIndex * WIDTH;
-        const BOTTOM = SHIFT + WIDTH - 1;
-        const TOP = BOTTOM + WIDTH;
-        indices.push(BOTTOM, TOP);
-    }
+    /*  End of horizontal for-loop.                                           */
 
     /*  Add the vertices and index array to the mesh.                         */
-    GEOMETRY.setAttribute('position', geometryAttributes);
-    GEOMETRY.setIndex(indices);
+    geometryA.setAttribute('position', geometryAttributesA);
+    geometryA.setIndex(indices);
+    geometryA.computeVertexNormals();
+
+    geometryB.setAttribute('position', geometryAttributesB);
+    geometryB.setIndex(indices);
+    geometryB.computeVertexNormals();
 
     /*  We wish to create a wireframe for the object. Create the lines.       */
-    object = new three.LineSegments(GEOMETRY, MATERIAL);
+    objectA = new three.Mesh(geometryA, material);
+    objectB = new three.Mesh(geometryB, material);
 
-    /*  Create the scene and add the elliptic paraboloid to it.               */
+    /*  Create the scene and add the Mobius strip to it.                      */
     scene = new three.Scene();
-    scene.add(object);
+    scene.add(objectA);
+    scene.add(objectB);
+    scene.add(mainLight);
 }
 /*  End of setupScene.                                                        */
 
@@ -290,7 +321,7 @@ function setupScene() {
  *  Function:                                                                 *
  *      init                                                                  *
  *  Purpose:                                                                  *
- *      Creates the animation for the wireframe elliptic paraboloid.          *
+ *      Creates the animation for the wireframe Mobius strip.                 *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *

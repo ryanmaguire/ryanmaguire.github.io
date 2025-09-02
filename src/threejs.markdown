@@ -14,10 +14,16 @@ permalink: /threejs/
 [**Elliptic Paraboloid Wireframe**](./surfaces/ellipticParaboloidWireframe)<br />
 [**Hyperbolic Paraboloid Parametrization Homotopy**](./surfaces/hyperbolicParaboloidParametrizationHomotopy)<br />
 [**Hyperbolic Paraboloid Wireframe**](./surfaces/hyperbolicParaboloidWireframe)<br />
+[**Klein Bottle Cross Cap**](./surfaces/kleinBottleCrossCap)<br />
+[**Klein Bottle Cross Cap To Standard Homotopy**](./surfaces/kleinBottleCrossCapToStandardHomotopy)<br />
+[**Klein Bottle Figure Eight Solid**](./surfaces/kleinBottleFigureEightSolid)<br />
 [**Klein Bottle Parametrization Homotopy**](./surfaces/kleinBottleParametrizationHomotopy)<br />
 [**Klein Bottle Solid**](./surfaces/kleinBottleSolid)<br />
+[**Klein Bottle Solid And Wireframe**](./surfaces/kleinBottleSolidAndWireframe)<br />
 [**Klein Bottle Solid Homotopy**](./surfaces/kleinBottleSolidHomotopy)<br />
 [**Klein Bottle Wireframe**](./surfaces/kleinBottleWireframe)<br />
+[**Mobius Strip Cross Cap**](./surfaces/mobiusStripCrossCap)<br />
+[**Mobius Strip Cross Cap To Standard Homotopy**](./surfaces/mobiusStripCrossCapToStandardHomotopy)<br />
 [**Mobius Strip Normal Animation**](./surfaces/mobiusStripNormalAnimation)<br />
 [**Mobius Strip Parametrization Homotopy**](./surfaces/mobiusStripParametrizationHomotopy)<br />
 [**Mobius Strip Solid**](./surfaces/mobiusStripSolid)<br />
