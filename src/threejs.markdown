@@ -8,6 +8,7 @@ permalink: /threejs/
 
 ## **Knots**
 [**Figure Eight**](./knots/figureEight)<br />
+[**Hopf Link Seifert Surface**](./knots/hopfLinkSeifertSurface)<br />
 [**Trefoil**](./knots/trefoil)<br />
 
 ## **Surfaces**
@@ -30,6 +31,8 @@ permalink: /threejs/
 [**Mobius Strip Solid Center Removed**](./surfaces/mobiusStripSolidCenterRemoved)<br />
 [**Mobius Strip Solid Homotopy**](./surfaces/mobiusStripSolidHomotopy)<br />
 [**Mobius Strip Wireframe**](./surfaces/mobiusStripWireframe)<br />
+[**Real Projective Plane Cross Cap**](./surfaces/realProjectivePlaneCrossCap)<br />
+[**Real Projective Plane Cross Cap Wireframe**](./surfaces/realProjectivePlaneCrossCapWireframe)<br />
 [**Sphere Parametrization Homotopy**](./surfaces/sphereParametrizationHomotopy)<br />
 [**Sphere Wireframe**](./surfaces/sphereWireframe)<br />
 [**Three Twist Surface Parametrization Homotopy**](./surfaces/threeTwistSurfaceParametrizationHomotopy)<br />
