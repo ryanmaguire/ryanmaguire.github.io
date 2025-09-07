@@ -15,10 +15,10 @@
  *  along with this file.  If not, see <https://www.gnu.org/licenses/>.       *
  ******************************************************************************
  *  Purpose:                                                                  *
- *      Draws the electric field for a dipole.                                *
+ *      Draws the electric field for a octupole.                              *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       August 2, 2025                                                *
+ *  Date:       September 3, 2025                                             *
  ******************************************************************************/
 
 /*  three.js has all of the tools for generating 3D animations.               */
@@ -38,15 +38,21 @@ const ZENITH = 32;
 /*  Square of the radius of a sphere. Used for checking if a point is inside. */
 const RADIUS_SQUARE = RADIUS * RADIUS;
 
-/*  Position vectors for the two charges.                                     */
-const P0 = new three.Vector3(-2.0 * RADIUS, 0.0, 0.0);
-const P1 = new three.Vector3(+2.0 * RADIUS, 0.0, 0.0);
+/*  Position vectors for the eight charges.                                   */
+const P0 = new three.Vector3(-2.0 * RADIUS, -2.0 * RADIUS, -2.0 * RADIUS);
+const P1 = new three.Vector3(+2.0 * RADIUS, -2.0 * RADIUS, -2.0 * RADIUS);
+const P2 = new three.Vector3(+2.0 * RADIUS, +2.0 * RADIUS, -2.0 * RADIUS);
+const P3 = new three.Vector3(-2.0 * RADIUS, +2.0 * RADIUS, -2.0 * RADIUS);
+const P4 = new three.Vector3(-2.0 * RADIUS, +2.0 * RADIUS, +2.0 * RADIUS);
+const P5 = new three.Vector3(+2.0 * RADIUS, +2.0 * RADIUS, +2.0 * RADIUS);
+const P6 = new three.Vector3(+2.0 * RADIUS, -2.0 * RADIUS, +2.0 * RADIUS);
+const P7 = new three.Vector3(-2.0 * RADIUS, -2.0 * RADIUS, +2.0 * RADIUS);
 
 /*  An array for all of the points. This makes looping over things easier.    */
-const POINTS = [P0, P1];
+const POINTS = [P0, P1, P2, P3, P4, P5, P6, P7];
 
-/*  Array for the magnitudes of the two charges.                              */
-const CHARGES = [+1.0, -1.0];
+/*  Array for the magnitudes of the eight charges.                            */
+const CHARGES = [+1.0, -1.0, +1.0, -1.0, +1.0, -1.0, +1.0, -1.0];
 
 /*  Parameters for the arrows representing the vector field. The total number *
  *  of arrows is the product of the three bin sizes, so roughly O(N^3). Do    *
@@ -67,7 +73,7 @@ const DZ = LENGTH / (Z_BINS - 1);
  *  Function:                                                                 *
  *      isInSphere                                                            *
  *  Purpose:                                                                  *
- *      Determines if a point is inside one of the two spheres.               *
+ *      Determines if a point is inside one of the eight spheres.             *
  *  Arguments:                                                                *
  *      position (three.Vector3):                                             *
  *          The position vector for a point in 3D space.                      *
@@ -256,9 +262,9 @@ function setupRenderer() {
 function setupCamera() {
 
     /*  Starting location for the camera.                                     */
-    const CAMERA_X = 0.5 * LENGTH;
-    const CAMERA_Y = LENGTH;
-    const CAMERA_Z = 0.75 * LENGTH;
+    const CAMERA_X = 1.45 * LENGTH;
+    const CAMERA_Y = 0.55 * LENGTH;
+    const CAMERA_Z = 0.65 * LENGTH;
 
     /*  Field-of-View for the camera.                                         */
     const FOV = 36.0;
@@ -418,7 +424,7 @@ function setupScene() {
  *  Function:                                                                 *
  *      init                                                                  *
  *  Purpose:                                                                  *
- *      Creates the animation for the dipole vector field.                    *
+ *      Creates the animation for the octupole vector field.                  *
  *  Arguments:                                                                *
  *      None.                                                                 *
  *  Output:                                                                   *

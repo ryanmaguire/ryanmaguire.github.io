@@ -50,6 +50,8 @@ permalink: /threejs/
 [**Flow Through Sphere**](./vectorFields/flowThroughSphere)<br />
 [**Gravitational Field Day**](./vectorFields/gravitationalFieldDay)<br />
 [**Gravitational Field Night**](./vectorFields/gravitationalFieldNight)<br />
+[**Octupole Electric Field**](./vectorFields/octupoleElectricField)<br />
+[**Quadrupole Electric Field**](./vectorFields/quadrupoleElectricField)<br />
 [**Radial Vector Field With Unit Sphere**](./vectorFields/radialVectorFieldWithUnitSphere)<br />
 [**Torus Vector Field**](./vectorFields/torusVectorField)<br />
 [**Vertically Flowing Vector Field Through Sphere**](./vectorFields/verticallyFlowingVectorFieldThroughSphere)<br />
