@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Ryan Maguire | Mathematics, Physics, and Programming</title>
+<meta name="generator" content="Jekyll v4.3.4" />
+<meta property="og:title" content="Ryan Maguire" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Mathematics, Physics, and Programming" />
+<meta property="og:description" content="Mathematics, Physics, and Programming" />
+<link rel="canonical" href="https://github.com/ryanmaguire/programming/foundations/integer_arithmetic/integer_overflow/" />
+<meta property="og:url" content="https://github.com/ryanmaguire/programming/foundations/integer_arithmetic/integer_overflow/" />
+<meta property="og:site_name" content="Ryan Maguire" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Ryan Maguire" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Mathematics, Physics, and Programming","headline":"Ryan Maguire","url":"https://github.com/ryanmaguire/programming/foundations/integer_arithmetic/integer_overflow/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://github.com/ryanmaguire/feed.xml" title="Ryan Maguire" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Ryan Maguire</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/asymptote/">Asymptote</a><a class="page-link" href="/papers/">Papers</a><a class="page-link" href="/presentations/">Presentations</a><a class="page-link" href="/programming/">Programming</a><a class="page-link" href="/projects/">Projects</a><a class="page-link" href="/teaching/">Teaching</a><a class="page-link" href="/threejs/">Three.js</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <p><a href="../"><strong>Back</strong></a></p>
+
+<h2 id="c">C<br /></h2>
+<div class="highlight"><pre><span></span><span class="cm">/******************************************************************************</span>
+<span class="cm"> *                                  LICENSE                                   *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  This file is part of mitx_mathematics_programming_examples.               *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  mitx_mathematics_programming_examples is free software: you can           *</span>
+<span class="cm"> *  redistribute it and/or modify it under the terms of the GNU General       *</span>
+<span class="cm"> *  Public License as published by the Free Software Foundation, either       *</span>
+<span class="cm"> *  version 3 of the License, or (at your option) any later version.          *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  mitx_mathematics_programming_examples is distributed in the hope that     *</span>
+<span class="cm"> *  it will be useful but WITHOUT ANY WARRANTY; without even the implied      *</span>
+<span class="cm"> *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.          *</span>
+<span class="cm"> *  See the GNU General Public License for more details.                      *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  You should have received a copy of the GNU General Public License         *</span>
+<span class="cm"> *  along with mitx_mathematics_programming_examples. If not, see             *</span>
+<span class="cm"> *  &lt;https://www.gnu.org/licenses/&gt;.                                          *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  Purpose:                                                                  *</span>
+<span class="cm"> *      Shows that integers addition can overflow, setting back to zero.      *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  Author: Ryan Maguire                                                      *</span>
+<span class="cm"> *  Date:   2024/12/03                                                        *</span>
+<span class="cm"> ******************************************************************************/</span>
+
+<span class="cm">/*  stdio.h provides the &quot;printf&quot; function, used for printing text.           */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+
+<span class="cm">/*  Computes the number of bits used for unsigned int&#39;s.                      */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">get_number_of_bits</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/*  Variables for keeping track of the largest power of two possible for  *</span>
+<span class="cm">     *  unsigned integers. Most computers use 32-bit int&#39;s.                   */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">exponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">power_of_two</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  We start with power_of_two = 1 and iteratively multiply by two. After *</span>
+<span class="cm">     *  enough iterations, this will overflow and we will get zero.           */</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">power_of_two</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0U</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/*  Increment the exponent since we haven&#39;t overflowed yet.           */</span>
+<span class="w">        </span><span class="n">exponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exponent</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/*  C syntax: &quot;x &lt;&lt; n&quot; takes x and shifts it up n bits. This is the   *</span>
+<span class="cm">         *  mathematical equivalent of multiplying x by 2^n. Setting          *</span>
+<span class="cm">         *  power_of_two equal to power_of_two &lt;&lt; 1 will compute the next     *</span>
+<span class="cm">         *  power of two up.                                                  */</span>
+<span class="w">        </span><span class="n">power_of_two</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">power_of_two</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/*  &quot;exponent&quot; now stores the first value N such that 2^N overflows to    *</span>
+<span class="cm">     *  zero. This is the number of bits used for the number. Return this.    */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">exponent</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/*  End of get_number_of_bits.                                                */</span>
+
+<span class="cm">/*  Computes the largest number possible for unsigned int.                    */</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">get_max_number</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/*  We will compute the maximum number for unsigned int as follows:       *</span>
+<span class="cm">     *                                                                        *</span>
+<span class="cm">     *            N - 1                                                       *</span>
+<span class="cm">     *            -----                                                       *</span>
+<span class="cm">     *            \      n                                                    *</span>
+<span class="cm">     *      max = /     2                                                     *</span>
+<span class="cm">     *            -----                                                       *</span>
+<span class="cm">     *            n = 0                                                       *</span>
+<span class="cm">     *                                                                        *</span>
+<span class="cm">     *  where N is the number of bits in unsigned int. That is, we create the *</span>
+<span class="cm">     *  number that is all ones in binary and is number-of-bits long.         */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">number_of_bits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_number_of_bits</span><span class="p">();</span>
+
+<span class="w">    </span><span class="cm">/*  We start the sum at zero and compute it iteratively.                  */</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_integer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0U</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Variable for looping over the bits of the number.                     */</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Variable for computing 2^n as n varies from 0 to number_of_bits - 1.  */</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">two_to_the_n</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Loop through the bits and perform the sum.                            */</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">number_of_bits</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">index</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="cm">/*  We compute 2^n by bit-shifting 1 by n bits. Consider the same     *</span>
+<span class="cm">         *  idea but in decimal. If you have 10.00 and want one hundred, you  *</span>
+<span class="cm">         *  would simply shift the decimal over by one, obtaining 100.0. This *</span>
+<span class="cm">         *  is the binary equivalent of that idea.                            */</span>
+<span class="w">        </span><span class="n">two_to_the_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">index</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/*  Add this power of two to the output.                              */</span>
+<span class="w">        </span><span class="n">max_integer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max_integer</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">two_to_the_n</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/*  max_integer is now 111....111_2, in binary, with number_of_bits 1&#39;s.  */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">max_integer</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/*  End of get_max_number.                                                    */</span>
+
+<span class="cm">/*  A short program for testing our functions.                                */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="cm">/*  Compute the number of bits and the max number using our functions.    */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">number_of_bits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_number_of_bits</span><span class="p">();</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_max_number</span><span class="p">();</span>
+
+<span class="w">    </span><span class="cm">/*  If we add 1 to the max number, it will overflow to zero. Let&#39;s see.   */</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_number_plus_one</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max_number</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1U</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Print all of the results to the screen. printf is found in stdio.h.   */</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Total Number of Bits: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">number_of_bits</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Largest Integer Value: %u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">max_number</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Largest Value Plus One: %u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">max_number_plus_one</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/*  We can execute this on GNU, Linux, FreeBSD, macOS, etc., via:             *</span>
+<span class="cm"> *      cc integer_overflow.c -o main                                         *</span>
+<span class="cm"> *      ./main                                                                *</span>
+<span class="cm"> *  This will output the following:                                           *</span>
+<span class="cm"> *      Total Number of Bits: 32                                              *</span>
+<span class="cm"> *      Largest Integer Value: 4294967295                                     *</span>
+<span class="cm"> *      Largest Value Plus One: 0                                             *</span>
+<span class="cm"> *  This final line indicates the overflow, we&#39;ve wrapped around to zero.     *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  On Windows you will need to install a C compiler. Common options are      *</span>
+<span class="cm"> *  Microsoft&#39;s MSVC, LLVM&#39;s clang, MinGW (which uses the GNU toolchain),     *</span>
+<span class="cm"> *  or installing Cygwin and running the commands above.                      */</span>
+</pre></div>
+
+<h2 id="c3">C3<br /></h2>
+<div class="highlight"><pre><span></span>/******************************************************************************
+ *                                  LICENSE                                   *
+ ******************************************************************************
+ *  This file is part of mitx_mathematics_programming_examples.               *
+ *                                                                            *
+ *  mitx_mathematics_programming_examples is free software: you can           *
+ *  redistribute it and/or modify it under the terms of the GNU General       *
+ *  Public License as published by the Free Software Foundation, either       *
+ *  version 3 of the License, or (at your option) any later version.          *
+ *                                                                            *
+ *  mitx_mathematics_programming_examples is distributed in the hope that     *
+ *  it will be useful but WITHOUT ANY WARRANTY; without even the implied      *
+ *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.          *
+ *  See the GNU General Public License for more details.                      *
+ *                                                                            *
+ *  You should have received a copy of the GNU General Public License         *
+ *  along with mitx_mathematics_programming_examples. If not, see             *
+ *  &lt;https://www.gnu.org/licenses/&gt;.                                          *
+ ******************************************************************************
+ *  Purpose:                                                                  *
+ *      Shows that integers addition can overflow, setting back to zero.      *
+ ******************************************************************************
+ *  Author: Ryan Maguire                                                      *
+ *  Date:   2025/05/29                                                        *
+ ******************************************************************************/
+
+/*  std::io provides the &quot;printfn&quot; function, used for printing text.          */
+import std::io;
+
+/*  Computes the number of bits used for unsigned int&#39;s.                      */
+fn int get_number_of_bits()
+{
+    /*  Variables for keeping track of the largest power of two possible for  *
+     *  unsigned integers. C3 uses 32-bit int&#39;s and unsigned int&#39;s.           */
+    int exponent = 0;
+    uint power_of_two = 1;
+
+    /*  We start with power_of_two = 1 and iteratively multiply by two. After *
+     *  enough iterations, this will overflow and we will get zero.           */
+    while (power_of_two != 0U)
+    {
+        /*  Increment the exponent since we haven&#39;t overflowed yet.           */
+        exponent = exponent + 1;
+
+        /*  C syntax: &quot;x &lt;&lt; n&quot; takes x and shifts it up n bits. This is the   *
+         *  mathematical equivalent of multiplying x by 2^n. Setting          *
+         *  power_of_two equal to power_of_two &lt;&lt; 1 will compute the next     *
+         *  power of two up.                                                  */
+        power_of_two = power_of_two &lt;&lt; 1;
+    }
+
+    /*  &quot;exponent&quot; now stores the first value N such that 2^N overflows to    *
+     *  zero. This is the number of bits used for the number. Return this.    */
+    return exponent;
+}
+/*  End of get_number_of_bits.                                                */
+
+/*  Computes the largest number possible for unsigned int.                    */
+fn uint get_max_number()
+{
+    /*  We will compute the maximum number for unsigned int as follows:       *
+     *                                                                        *
+     *            N - 1                                                       *
+     *            -----                                                       *
+     *            \      n                                                    *
+     *      max = /     2                                                     *
+     *            -----                                                       *
+     *            n = 0                                                       *
+     *                                                                        *
+     *  where N is the number of bits in unsigned int. That is, we create the *
+     *  number that is all ones in binary and is number-of-bits long.         */
+    int number_of_bits = get_number_of_bits();
+
+    /*  We start the sum at zero and compute it iteratively.                  */
+    uint max_integer = 0U;
+
+    /*  Variable for looping over the bits of the number.                     */
+    int index;
+
+    /*  Variable for computing 2^n as n varies from 0 to number_of_bits - 1.  */
+    uint two_to_the_n;
+
+    /*  Loop through the bits and perform the sum.                            */
+    for (index = 0; index &lt; number_of_bits; ++index)
+    {
+        /*  We compute 2^n by bit-shifting 1 by n bits. Consider the same     *
+         *  idea but in decimal. If you have 10.00 and want one hundred, you  *
+         *  would simply shift the decimal over by one, obtaining 100.0. This *
+         *  is the binary equivalent of that idea.                            */
+        two_to_the_n = 1 &lt;&lt; index;
+
+        /*  Add this power of two to the output.                              */
+        max_integer = max_integer + two_to_the_n;
+    }
+
+    /*  max_integer is now 111....111_2, in binary, with number_of_bits 1&#39;s.  */
+    return max_integer;
+}
+/*  End of get_max_number.                                                    */
+
+/*  A short program for testing our functions.                                */
+fn int main()
+{
+    /*  Compute the number of bits and the max number using our functions.    */
+    int number_of_bits = get_number_of_bits();
+    uint max_number = get_max_number();
+
+    /*  If we add 1 to the max number, it will overflow to zero. Let&#39;s see.   */
+    uint max_number_plus_one = max_number + 1U;
+
+    /*  Print all of the results to the screen. printfn adds a new line, too. */
+    io::printfn(&quot;Total Number of Bits: %d&quot;, number_of_bits);
+    io::printfn(&quot;Largest Integer Value: %d&quot;, max_number);
+    io::printfn(&quot;Largest Value Plus One: %d&quot;, max_number_plus_one);
+    return 0;
+}
+</pre></div>
+
+<h2 id="rust">Rust<br /></h2>
+<div class="highlight"><pre><span></span><span class="cm">/******************************************************************************</span>
+<span class="cm"> *                                  LICENSE                                   *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  This file is part of mitx_mathematics_programming_examples.               *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  mitx_mathematics_programming_examples is free software: you can           *</span>
+<span class="cm"> *  redistribute it and/or modify it under the terms of the GNU General       *</span>
+<span class="cm"> *  Public License as published by the Free Software Foundation, either       *</span>
+<span class="cm"> *  version 3 of the License, or (at your option) any later version.          *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  mitx_mathematics_programming_examples is distributed in the hope that     *</span>
+<span class="cm"> *  it will be useful but WITHOUT ANY WARRANTY; without even the implied      *</span>
+<span class="cm"> *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.          *</span>
+<span class="cm"> *  See the GNU General Public License for more details.                      *</span>
+<span class="cm"> *                                                                            *</span>
+<span class="cm"> *  You should have received a copy of the GNU General Public License         *</span>
+<span class="cm"> *  along with mitx_mathematics_programming_examples. If not, see             *</span>
+<span class="cm"> *  &lt;https://www.gnu.org/licenses/&gt;.                                          *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  Purpose:                                                                  *</span>
+<span class="cm"> *      Shows that integers addition can overflow, setting back to zero.      *</span>
+<span class="cm"> ******************************************************************************</span>
+<span class="cm"> *  Author: Ryan Maguire                                                      *</span>
+<span class="cm"> *  Date:   2025/05/29                                                        *</span>
+<span class="cm"> ******************************************************************************/</span>
+
+<span class="cm">/*  Computes the number of bits used for unsigned integers.                   */</span>
+<span class="k">fn</span> <span class="nf">get_number_of_bits</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="kt">u32</span> <span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/*  Variables for keeping track of the largest power of two possible for  *</span>
+<span class="cm">     *  unsigned integers. Rust has fixed-width 32-bit integers.              */</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">exponent</span>: <span class="kt">u32</span> <span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">power_of_two</span>: <span class="kt">u32</span> <span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  We start with power_of_two = 1 and iteratively multiply by two. After *</span>
+<span class="cm">     *  enough iterations, this will overflow and we will get zero.           */</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="n">power_of_two</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="cm">/*  Increment the exponent since we haven&#39;t overflowed yet.           */</span>
+<span class="w">        </span><span class="n">exponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">exponent</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+
+<span class="w">        </span><span class="cm">/*  C syntax: &quot;x &lt;&lt; n&quot; takes x and shifts it up n bits. This is the   *</span>
+<span class="cm">         *  mathematical equivalent of multiplying x by 2^n. Setting          *</span>
+<span class="cm">         *  power_of_two equal to power_of_two &lt;&lt; 1 will compute the next     *</span>
+<span class="cm">         *  power of two up.                                                  */</span>
+<span class="w">        </span><span class="n">power_of_two</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">power_of_two</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/*  &quot;exponent&quot; now stores the first value N such that 2^N overflows to    *</span>
+<span class="cm">     *  zero. This is the number of bits used for the number. Return this.    */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">exponent</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/*  End of get_number_of_bits.                                                */</span>
+
+<span class="cm">/*  Computes the largest number possible for unsigned integers.               */</span>
+<span class="k">fn</span> <span class="nf">get_max_number</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="kt">u32</span> <span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/*  We will compute the maximum number for unsigned int as follows:       *</span>
+<span class="cm">     *                                                                        *</span>
+<span class="cm">     *            N - 1                                                       *</span>
+<span class="cm">     *            -----                                                       *</span>
+<span class="cm">     *            \      n                                                    *</span>
+<span class="cm">     *      max = /     2                                                     *</span>
+<span class="cm">     *            -----                                                       *</span>
+<span class="cm">     *            n = 0                                                       *</span>
+<span class="cm">     *                                                                        *</span>
+<span class="cm">     *  where N is the number of bits in the unsigned integer type. That is,  *</span>
+<span class="cm">     *  we create the number that is all 1 in binary and number-of-bits long. */</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">number_of_bits</span>: <span class="kt">u32</span> <span class="o">=</span><span class="w"> </span><span class="n">get_number_of_bits</span><span class="p">();</span>
+
+<span class="w">    </span><span class="cm">/*  We start the sum at zero and compute it iteratively.                  */</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">max_integer</span>: <span class="kt">u32</span> <span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Variable for computing 2^n as n varies from 0 to number_of_bits - 1.  */</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">two_to_the_n</span>: <span class="kt">u32</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/*  Loop through the bits and perform the sum.                            */</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="n">number_of_bits</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="cm">/*  We compute 2^n by bit-shifting 1 by n bits. Consider the same     *</span>
+<span class="cm">         *  idea but in decimal. If you have 10.00 and want one hundred, you  *</span>
+<span class="cm">         *  would simply shift the decimal over by one, obtaining 100.0. This *</span>
+<span class="cm">         *  is the binary equivalent of that idea. wrapping_shl, which is the *</span>
+<span class="cm">         *  &quot;wrapping-shift-left&quot; method, allows for shifting to overflow, or *</span>
+<span class="cm">         *  &quot;wrap&quot;, in Rust.                                                  */</span>
+<span class="w">        </span><span class="n">two_to_the_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="k">u32</span><span class="p">.</span><span class="n">wrapping_shl</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+
+<span class="w">        </span><span class="cm">/*  Add this power of two to the output. wrapping_add also allows one *</span>
+<span class="cm">         *  to add with wrapping enabled.                                     */</span>
+<span class="w">        </span><span class="n">max_integer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max_integer</span><span class="p">.</span><span class="n">wrapping_add</span><span class="p">(</span><span class="n">two_to_the_n</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/*  max_integer is now 111....111_2, in binary, with number_of_bits 1&#39;s.  */</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">max_integer</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/*  End of get_max_number.                                                    */</span>
+
+<span class="cm">/*  A short program for testing our functions.                                */</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="cm">/*  Compute the number of bits and the max number using our functions.    */</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">number_of_bits</span>: <span class="kt">u32</span> <span class="o">=</span><span class="w"> </span><span class="n">get_number_of_bits</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">max_number</span>: <span class="kt">u32</span> <span class="o">=</span><span class="w"> </span><span class="n">get_max_number</span><span class="p">();</span>
+
+<span class="w">    </span><span class="cm">/*  If we add 1 to the max number, it will overflow to zero. Let&#39;s see.   *</span>
+<span class="cm">     *  Rust will catch overflows and stop the program by default unless we   *</span>
+<span class="cm">     *  use wrapping_add. Use this instead of the &quot;+&quot; symbol.                 */</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">max_number_plus_one</span>: <span class="kt">u32</span> <span class="o">=</span><span class="w"> </span><span class="n">max_number</span><span class="p">.</span><span class="n">wrapping_add</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="w">    </span><span class="cm">/*  Print all of the results to the screen.                               */</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Total Number of Bits: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">number_of_bits</span><span class="p">);</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Largest Integer Value: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">max_number</span><span class="p">);</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Largest Value Plus One: {}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">max_number_plus_one</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Ryan Maguire</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ryan Maguire</li><li><a class="u-email" href="mailto:rmaguire@protonmail.com">rmaguire@protonmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/ryanmaguire"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">ryanmaguire</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Mathematics, Physics, and Programming</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
