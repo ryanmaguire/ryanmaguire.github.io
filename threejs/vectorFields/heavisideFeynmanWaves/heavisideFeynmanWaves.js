@@ -18,7 +18,7 @@
  *      Draws electromagnetic waves using the Heaviside-Feynman formula.      *
  ******************************************************************************
  *  Author:     Ryan Maguire                                                  *
- *  Date:       Spetember 19, 2025                                            *
+ *  Date:       Spetember 22, 2025                                            *
  ******************************************************************************/
 
 /*  three.js has all of the tools for generating 3D animations.               */
@@ -38,14 +38,18 @@ const ZENITH = 16;
 /*  Parameters for the arrows representing the vector field. The total number *
  *  of arrows is the product of the three bin sizes, so roughly O(N^3). Do    *
  *  not make these numbers too big, this will slow the animation to a crawl.  */
-const LENGTH = 16.0 * RADIUS;
-const X_BINS = 48;
-const Y_BINS = 48;
+const LENGTH = 8.0 * RADIUS;
+const X_BINS = 14;
+const Y_BINS = 14;
+const Z_BINS = 14;
 
 const DX = LENGTH / X_BINS;
 const DY = LENGTH / Y_BINS;
+const DZ = LENGTH / Z_BINS;
 
 const arrowArray = [];
+
+let accelerationDirection = new three.Vector3();
 
 /******************************************************************************
  *  Function:                                                                 *
@@ -63,25 +67,25 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function halleysMethod(rhoValue, time, guess) {
+function halleysMethod(rhoValue, zValue, time, guess) {
 
     const RHO_SQ = rhoValue * rhoValue;
 
-    const SIN_T = Math.sin(time);
-    const COS_T = Math.cos(time);
+    const SIN_T = Math.sin(guess);
+    const COS_T = Math.cos(guess);
+    const COS_T_SQ = COS_T * COS_T;
 
-    const SIN_T_SQ = SIN_T * SIN_T;
-    const SIN_T_QR = SIN_T_SQ * SIN_T_SQ;
+    const Z = zValue - SIN_T;
+    const Z_SQ = Z * Z;
 
-    const NORM_SQUARED = RHO_SQ + SIN_T_SQ;
+    const NORM_SQUARED = RHO_SQ + Z_SQ;
     const NORM = Math.sqrt(NORM_SQUARED);
 
-    const FUNC = guess - time + NORM;
-    const DFUNC = 1.0 + COS_T * SIN_T / NORM;
+    const FACTOR = COS_T * Z / NORM;
 
-    const D2FUNC_NUMER = RHO_SQ * (1.0 - 2.0 * SIN_T_SQ) - SIN_T_QR;
-    const D2FUNC_DENOM = NORM * NORM_SQUARED;
-    const D2FUNC = D2FUNC_NUMER / D2FUNC_DENOM;
+    const FUNC = guess - time + NORM;
+    const DFUNC = 1.0 - FACTOR;
+    const D2FUNC = (Z * SIN_T - FACTOR * FACTOR + COS_T_SQ) / NORM;
 
     const NUMER = FUNC * DFUNC;
     const DENOM = DFUNC * DFUNC - 0.5 * FUNC * D2FUNC;
@@ -89,25 +93,40 @@ function halleysMethod(rhoValue, time, guess) {
     return guess - NUMER / DENOM;
 }
 
-function retardedAcceleration(rhoValue, retardedTime) {
+function setRetardedAcceleration(arrow, rhoValue, zValue, time, guess) {
 
-    const SIN_T = Math.sin(retardedTime);
-    const COS_T = Math.cos(retardedTime);
+    const RETARDED_TIME = halleysMethod(rhoValue, zValue, time, guess);
 
-    const SIN_T_SQ = SIN_T * SIN_T;
+    const SIN_T = Math.sin(RETARDED_TIME);
+    const COS_T = Math.cos(RETARDED_TIME);
     const COS_T_SQ = COS_T * COS_T;
 
-    const NORM_SQ = rhoValue * rhoValue + SIN_T_SQ;
+    const HEIGHT = zValue - SIN_T;
+    const HEIGHT_SQ = HEIGHT * HEIGHT;
+
+    const NORM_SQ = rhoValue * rhoValue + HEIGHT_SQ;
     const NORM = Math.sqrt(NORM_SQ);
     const RCPR_NORM = 1.0 / NORM;
+    const RCPR_NORM_SQ = RCPR_NORM * RCPR_NORM;
 
-    const NUMER = COS_T_SQ - SIN_T_SQ - SIN_T_SQ * COS_T_SQ / NORM_SQ;
+    const NUMER = -HEIGHT_SQ*COS_T_SQ*RCPR_NORM_SQ + HEIGHT*SIN_T + COS_T_SQ;
 
-    const FACTOR = -NUMER / NORM_SQ;
-    const RHO_OUT = FACTOR * RCPR_NORM;
-    const Z_OUT = (SIN_T * FACTOR - SIN_T) * RCPR_NORM;
+    const FACTOR = -NUMER * RCPR_NORM_SQ;
+    const RHO_FACTOR = FACTOR * RCPR_NORM;
 
-    return new three.Vector3(RHO_OUT, RHO_OUT, Z_OUT);
+    const X = arrow.position.x * RHO_FACTOR;
+    const Y = arrow.position.y * RHO_FACTOR;
+    const Z = (SIN_T + HEIGHT * FACTOR) * RCPR_NORM;
+
+    const LENGTH = Math.sqrt(X*X + Y*Y + Z*Z);
+    const NORMALIZATION = 1.0 / LENGTH;
+
+    accelerationDirection.x = X * NORMALIZATION;
+    accelerationDirection.y = Y * NORMALIZATION;
+    accelerationDirection.z = Z * NORMALIZATION;
+
+    arrow.setDirection(accelerationDirection);
+    arrow.setLength(LENGTH);
 }
 
 /******************************************************************************
@@ -135,25 +154,17 @@ function animate() {
     {
         const X = arrowArray[ind].position.x;
         const Y = arrowArray[ind].position.y;
+        const Z = arrowArray[ind].position.z;
+
         const RHO = Math.sqrt(X*X + Y*Y);
+        const NORM = Math.sqrt(RHO * RHO + Z * Z);
 
-        const GUESS = TIME - RHO;
-
-        let retardedTime, acceleration, direction, length;
+        const GUESS = TIME - NORM;
 
         if (GUESS < 0.0)
             continue;
 
-        retardedTime = halleysMethod(RHO, TIME, GUESS);
-        acceleration = retardedAcceleration(RHO, retardedTime);
-
-        acceleration.x *= X;
-        acceleration.y *= Y;
-        length = acceleration.length();
-        direction = acceleration.normalize();
-
-        arrowArray[ind].setDirection(direction);
-        arrowArray[ind].setLength(length);
+        setRetardedAcceleration(arrowArray[ind], RHO, Z, TIME, GUESS);
     }
 
     /*  Re-render the newly rotated scene.                                    */
@@ -210,7 +221,7 @@ function setupRenderer() {
 function setupCamera() {
 
     /*  Starting location for the camera.                                     */
-    const CAMERA_X = 0.0;
+    const CAMERA_X = 6.0;
     const CAMERA_Y = -18.0;
     const CAMERA_Z = 7.0;
 
@@ -246,9 +257,8 @@ function setupCamera() {
 function setupArrows() {
 
     /*  Indices for the three axes.                                           */
-    let xInd, yInd;
+    let xInd, yInd, zInd;
 
-    const Z = 0.0;
     const DIR = new three.Vector3(0.0, 0.0, -1.0);
     const COLOR = 0xFF0000;
 
@@ -263,23 +273,32 @@ function setupArrows() {
         {
             /*  Convert y index to the y coordinate in 3D space.              */
             const Y = -0.5 * LENGTH + yInd * DY;
-            const NORM = Math.sqrt(X*X + Y*Y);
 
-            if (NORM < RADIUS)
-                continue;
+            /*  Lastly, loop through the depth axis.                          */
+            for (zInd = 0; zInd <= Z_BINS; ++zInd)
+            {
+                /*  Convert y index to the y coordinate in 3D space.          */
+                const Z = -0.5 * LENGTH + zInd * DZ;
 
-            const POS = new three.Vector3(X, Y, Z);
+                const NORM = Math.sqrt(X*X + Y*Y + 0.5*Z*Z);
 
-            const ARROW = new three.ArrowHelper(DIR, POS, 0.06125, COLOR);
+                if (NORM < RADIUS)
+                    continue;
 
-            scene.add(ARROW);
+                const POS = new three.Vector3(X, Y, Z);
 
-            /*  We will rotate this arrow throughout the animation. Add   *
-                *  it to our arrow array so we can keep track of it later.   */
-            arrowArray.push(ARROW);
+                const ARROW = new three.ArrowHelper(DIR, POS, 0.06125, COLOR);
+
+                scene.add(ARROW);
+
+                /*  We will rotate this arrow throughout the animation. Add   *
+                 *  it to our arrow array so we can keep track of it later.   */
+                arrowArray.push(ARROW);
+            }
         }
     }
 }
+
 
 /******************************************************************************
  *  Function:                                                                 *

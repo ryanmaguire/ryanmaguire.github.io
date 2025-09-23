@@ -52,7 +52,9 @@ permalink: /threejs/
 [**Flow Through Sphere**](./vectorFields/flowThroughSphere)<br />
 [**Gravitational Field Day**](./vectorFields/gravitationalFieldDay)<br />
 [**Gravitational Field Night**](./vectorFields/gravitationalFieldNight)<br />
-[**Heaviside Feynman Waves In The Plane**](./vectorFields/heavisideFeynmanWavesInThePlane)<br />
+[**Heaviside Feynman Waves**](./vectorFields/heavisideFeynmanWaves)<br />
+[**Heaviside Feynman Waves In The X Y Plane**](./vectorFields/heavisideFeynmanWavesInTheXYPlane)<br />
+[**Heaviside Feynman Waves In The X Z Plane**](./vectorFields/heavisideFeynmanWavesInTheXZPlane)<br />
 [**Octupole Electric Field**](./vectorFields/octupoleElectricField)<br />
 [**Quadrupole Electric Field**](./vectorFields/quadrupoleElectricField)<br />
 [**Radial Vector Field With Unit Sphere**](./vectorFields/radialVectorFieldWithUnitSphere)<br />
